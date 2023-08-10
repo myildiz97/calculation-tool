@@ -4,23 +4,23 @@ import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, role } = req.body;
 
     // Check if name was entered
     if (!fullName) return res.json({ error: "Full name is required!" });;
 
-    // Check if password is good
+    // Check if password is valid
     if (!password || password.length < 8) return res.json({ error: "Password is required and should be at least 8 characters long" });
 
     // Check email 
     const exist = await userModel.findOne({ email });
 
-    if (exist) return res.json({ error: "Email is taken already"});
+    if (exist) return res.json({ error: "Email is already taken"});
 
     const hashedPassword = await hashPassword(password);
 
     // Create user in database
-    const user = await userModel.create({ fullName, email, password: hashedPassword });
+    const user = await userModel.create({ fullName, email, password: hashedPassword, role });
 
     return res.json(user);
 

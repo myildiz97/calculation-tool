@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get("/", getProfile);
 
+router.get("/logout", logout);
+
 router.post("/logout", logout);
 
 router.post("/login", loginUser);

@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&family=Roboto:wght@500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Roboto Mono', monospace;
+  background-color: #264653;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  min-width: 320px;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+}
+
+.form-h1 {
+  color: #fff;
+  margin: 0 auto 10px;
+}
+
+.log-reg-form {
+  width: calc(320px * 0.9);
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 5px 0 20px;
+  font-size: 1em;
+}
+
+.form-inputs label {
+  font-weight: bold;
+}
+
+.form-inputs input, .form-inputs select {
+  margin-top: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+.log-reg-form button {
+  border: none;
+  background: #e63946;
+  opacity: 0.8;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  margin: 10px auto 0;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.log-reg-form button:hover {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.form-inputs select {
+  cursor: pointer;
+}
+
+.errors {
+  margin-bottom: 0;
+  color: #e63946;
+  font-weight: bold;
+}

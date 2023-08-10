@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState({});
 
   useEffect(() => {
     axios.get("/")
-      .then(({ data }) => setUser(data))
+      .then(({ data }) => data?.role === "Admin" ? setUser(data) : navigate("/login"))
       .catch((err) => console.log(err));
   }, []);
 
   return (
-    user && <h1>{user.email}</h1>
+    user && <div className="wrapper">{user.email}</div>
   );
 };
 
