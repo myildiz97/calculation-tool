@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 app.use(cors({
   credentials: true,
-  origin: "http://localhost:5173",
+  origin: "https://calculation-tool-client.vercel.app", // http://localhost:5173
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
