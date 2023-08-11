@@ -5,7 +5,7 @@ import Admin from "./pages/Admin";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 
-axios.defaults.baseURL = "https://calculation-tool.vercel.app"; //  http://localhost:5000
+axios.defaults.baseURL = "http://localhost:5000"; // https://calculation-tool.vercel.app
 axios.defaults.withCredentials = true;
 
 const App = () => {
