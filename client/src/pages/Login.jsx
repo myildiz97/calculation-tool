@@ -10,9 +10,11 @@ import { USER_ROLES } from '../../../server/constants/constans';
 const schema = z.object({
   email: z
     .string()
+    .nonempty("Email is required!")
     .regex(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, "Invalid email address"),
   password: z
     .string()
+    .nonempty("Password is required!")
     .min(8, "Password should be at least 8 characters"),
 });
 

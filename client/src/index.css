@@ -12,16 +12,27 @@ html, body {
   background-color: #264653;
 }
 
+body {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
 h1, h2, h3 {
   margin: 0;
   padding: 0;
 }
 
+#root {
+  width: 90%;
+}
+
 .wrapper {
-  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: 100vh;
-  display: grid;
-  place-content: center;
 }
 
 .form-h1 {
@@ -30,16 +41,48 @@ h1, h2, h3 {
 }
 
 .log-reg-form {
-  width: calc(320px * 0.9);
+  width: 100%;
   display: flex;
   flex-direction: column;
   color: #fff;
 }
 
+.input-page {
+  margin-top: 20px;
+}
+
 .custom-inputs {
   width: 100%;
   margin: 10px auto;
-  border: 1px solid red;
+}
+
+.form-inputNums {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.form-inputNums div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-inputNums div input {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  padding-left: 20px;
+}
+
+.form-inputNums div button {
+  margin: auto 0;
 }
 
 .form-inputs {
@@ -50,8 +93,10 @@ h1, h2, h3 {
   font-size: 1em;
 }
 
-.form-inputs label {
+label {
+  text-align: start;
   font-weight: bold;
+  color: #fff;
 }
 
 .form-inputs input, .form-inputs select {
@@ -61,12 +106,12 @@ h1, h2, h3 {
   border: none;
 }
 
-.log-reg-form button {
+button {
   border: none;
   background: #e63946;
   opacity: 0.8;
   padding: 10px;
-  width: 80%;
+  width: 100%;
   border-radius: 10px;
   margin: 10px auto 0;
   color: #fff;
@@ -74,7 +119,7 @@ h1, h2, h3 {
   cursor: pointer;
 }
 
-.log-reg-form button:hover {
+button:hover {
   opacity: 1;
   font-weight: bold;
 }
@@ -85,6 +130,7 @@ h1, h2, h3 {
 
 .errors {
   margin-bottom: 0;
+  margin-right: auto;
   color: #e63946;
   font-weight: bold;
 }
@@ -117,6 +163,7 @@ h1, h2, h3 {
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
+  color: #000;
 }
 
 .upload-button:hover {
