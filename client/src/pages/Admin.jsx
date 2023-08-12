@@ -7,7 +7,9 @@ const Admin = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({});
-  const [inputPageNumber, setInputPageNumber] = useState(0);
+  const [inputPageNumber, setInputPageNumber] = useState([]);
+  const [numberOfPages, setNumberOfPages] = useState(null);
+  const [numberError, setNumberError] = useState(null);
 
   useEffect(() => {
     axios.get("/")
@@ -19,7 +21,28 @@ const Admin = () => {
     <div className="wrapper">
       <h1>Admin Panel</h1>
       {user && <h2>Welcome {user.fullName}!</h2>}
-      <InputPage />
+      {
+        inputPageNumber.length < 1 ? (
+          <div className="form-inputNums">
+            <label htmlFor="inputPageNumber">Enter the number of input pages: </label>
+            <div>
+              <input type="number" id="inputPageNumber" placeholder="2" min="0" onChange={(e) => setNumberOfPages(e.target.value)} />
+              <button onClick={() => {
+                if (!numberOfPages) setNumberError("Page number must be entered!");
+                if (numberOfPages < 0) {
+                  setNumberError("Page number cannot be negative!");
+                } else {
+                  const array = Array.from({ length: numberOfPages }, (_, index) => index.toString());
+                  setInputPageNumber(array);
+                }
+            }}>Get Pages</button>
+            </div>
+            {numberError && <p className="errors">{numberError}</p>}
+          </div>
+        ) : (
+          <InputPage inputPageNumber={inputPageNumber} />
+        )
+      }
     </div>
   );
 };

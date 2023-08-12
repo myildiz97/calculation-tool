@@ -1,27 +1,28 @@
-const CustomInput = ({ inputNumbers=["0"], register, errors }) => {
+const CustomInput = ({ inputNumbers=["0"], register, errors, index }) => {
+  
   return (
     <div className="custom-inputs">
-      {inputNumbers.map((input, index) => (
-        <div key={index}>
+      {inputNumbers.map((input, i) => (
+        <div key={index + "-" + i}>
           <div className="form-inputs">
-            <label htmlFor={`placeholder-${index}`}>{index + 1}. Placeholder: </label>
+            <label htmlFor={`placeholder-${i}`}>{i + 1}. Placeholder: </label>
             <input 
-              id={`placeholder-${index}`}
+              id={`placeholder-${i}`}
               type="text"
-              {...register(`placeholder.${index}`)}
+              {...register(`placeholder.${index}.${i}`)}
               placeholder="Enter custom placeholder..."
             />
-            {errors?.placeholder?.[index] && <p className="errors">{errors?.placeholder?.[index]?.message}</p>}
+            {errors?.placeholder?.[index]?.[i] && <p className="errors">{errors?.placeholder?.[index]?.[i]?.message}</p>}
           </div>
           <div className="form-inputs">
-            <label htmlFor={`variable-${index}`}>{index + 1}. Variable: </label>
+            <label htmlFor={`variable-${i}`}>{i + 1}. Variable: </label>
             <input 
-              id={`variable-${index}`}
+              id={`variable-${i}`}
               type="text"
-              {...register(`variableName.${index}`)}
+              {...register(`variableName.${index}.${i}`)}
               placeholder="Enter custom placeholder..."
             />
-            {errors?.variableName?.[index] && <p className="errors">{errors?.variableName?.[index]?.message}</p>}
+            {errors?.variableName?.[index]?.[i] && <p className="errors">{errors?.variableName?.[index]?.[i]?.message}</p>}
           </div>
         </div>
       ))}
