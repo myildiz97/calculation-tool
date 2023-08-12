@@ -38,7 +38,7 @@ const Login = () => {
         toast.error(data?.error);
       } else {
         toast.success("Login is successfull!");
-        data?.role === USER_ROLES[1] && navigate("/admin");
+        data?.role === USER_ROLES[1] ? navigate("/admin") : setTimeout(() => navigate(0), 2000);
       };
     } catch (error) {
       console.error(error);

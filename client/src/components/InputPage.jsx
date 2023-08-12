@@ -42,6 +42,7 @@ const InputPage = ({ inputPageNumber }) => {
   const [numberOfVars, setNumberOfVars] = useState(Array.from({ length: inputPageNumber }, () => null));
   const [inputNumbers, setInputNumbers] = useState(Array.from({ length: inputPageNumber }, () => []));
   const [numberError, setNumberError] = useState(Array.from({ length: inputPageNumber }, () => null));
+  const [btnVars, setBtnVars] = useState(new Array(inputPageNumber.length).fill("Set Variable"));
 
   const { handleSubmit, register, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -51,24 +52,14 @@ const InputPage = ({ inputPageNumber }) => {
     console.log(data);
   };
 
-  const handleVarChange = (index, value) => {
-    const newVars = [...numberOfVars];
-    newVars[index] = value;
-    setNumberOfVars(newVars);
+  const handleChange = (index, value, arr, setArr) => {
+    const newArr = [...arr];
+    newArr[index] = value;
+    setArr(newArr);
   };
 
-  const handleErrorChange = (index, value) => {
-    const newErrors = [...numberError];
-    newErrors[index] = value;
-    setNumberError(newErrors);
-  };
-
-  const handleInputNums = (index, value) => {
-    const newInputNums = [...inputNumbers];
-    newInputNums[index] = value;
-    setInputNumbers(newInputNums);
-  };
-
+  // There is an error if more than 2 pages set
+  // Error: User must set the variables in the order of page number, otherwise an error occurs
   const checkInputNums = inputNumbers.filter(i => i.length > 0).length !== inputPageNumber.length;
 
   return (
@@ -79,16 +70,18 @@ const InputPage = ({ inputPageNumber }) => {
             <div key={"page" + index} className="form-inputNums">
               <label htmlFor="inputNumber">Enter the number of variable inputs for page {index + 1}: </label>
               <div>
-                <input type="number" id="inputNumber" placeholder="3" min="0" onChange={(e) => handleVarChange(index, e.target.value)} />
+                <input type="number" id="inputNumber" placeholder="3" min="0" onChange={(e) => handleChange(index, e.target.value, numberOfVars, setNumberOfVars)} />
                 <button onClick={() => {
-                  if (!numberOfVars[index]) handleErrorChange(index, "Input number must be entered");
+                  if (!numberOfVars[index]) handleChange(index, "Input number must be entered", numberError, setNumberError);
                   if (numberOfVars[index] < 0) {
-                    handleErrorChange(index, "Input number cannot be negative!");
+                    handleChange(index, "Input number cannot be negative!", numberError, setNumberError);
                   } else {
                     const array = Array.from({ length: numberOfVars[index] }, (_, i) => i.toString());
-                    handleInputNums(index, array);
-                  }
-              }}>Set Variables</button>
+                    handleChange(index, array, inputNumbers, setInputNumbers);
+                  };
+                  handleChange(index, "Variable Setted", btnVars, setBtnVars);
+                  setTimeout(() => handleChange(index, "Set Variable", btnVars, setBtnVars), 3000)
+                }}>{btnVars[index]}</button>
               </div>
               {numberError[index] && <p className="errors">{numberError[index]}</p>}
             </div>
@@ -98,7 +91,7 @@ const InputPage = ({ inputPageNumber }) => {
 
             return (
               <div className="input-page" key={"pages - " + index}>
-                <h2>Configurations of Page {index + 1}</h2>
+                <h2 className="input-page-heading">Configurations of Page {index + 1}</h2>
                 <br />
                 <form noValidate onSubmit={handleSubmit(onSubmit)} className="input-page-form">
                   <ImageContainer
@@ -122,7 +115,7 @@ const InputPage = ({ inputPageNumber }) => {
                     index={index}
                     />
                   <CustomInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
-                  {inputPageNumber.length === index + 1 ? <button type="submit">Submit</button> : <hr className="page-hr" />}
+                  {inputPageNumber.length === index + 1 ? <button type="submit" className="page-btn">Submit</button> : <hr className="page-hr" />}
                 </form>
               </div>
             )

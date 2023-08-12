@@ -19,8 +19,8 @@ const Admin = () => {
 
   return (
     <div className="wrapper">
-      <h1>Admin Panel</h1>
-      {user && <h2>Welcome {user.fullName}!</h2>}
+      <h1 className="wrapper-heading">Admin Panel</h1>
+      {user && <h2 className="wrapper-heading">Welcome {user.fullName}!</h2>}
       {
         inputPageNumber.length < 1 ? (
           <div className="form-inputNums">
@@ -35,7 +35,7 @@ const Admin = () => {
                   const array = Array.from({ length: numberOfPages }, (_, index) => index.toString());
                   setInputPageNumber(array);
                 }
-            }}>Get Pages</button>
+            }}>Set Pages</button>
             </div>
             {numberError && <p className="errors">{numberError}</p>}
           </div>

@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Admin from "./pages/Admin";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
+import MainLayout from "./layouts/MainLayout";
 
 axios.defaults.baseURL = "http://localhost:5000"; // https://calculation-tool.vercel.app
 axios.defaults.withCredentials = true;
@@ -16,10 +17,12 @@ const App = () => {
         toastOptions={{ duration: 3000}} 
       />
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Login />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="admin" element={<Admin />} />
+        </Route>
       </Routes>
     </Router>
   );
