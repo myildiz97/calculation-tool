@@ -1,4 +1,5 @@
 import userModel from "../models/user.js";
+import pagesModel from "../models/pages.js";
 import { hashPassword, comparePassword } from "../helpers/index.js";
 import jwt from "jsonwebtoken";
 
@@ -7,7 +8,7 @@ export const registerUser = async (req, res) => {
     const { fullName, email, password, role } = req.body;
 
     // Check if name was entered
-    if (!fullName) return res.json({ error: "Full name is required!" });;
+    if (!fullName) return res.json({ error: "Full name is required!" });
 
     // Check if password is valid
     if (!password || password.length < 8) return res.json({ error: "Password is required and should be at least 8 characters long" });
@@ -78,4 +79,40 @@ export const getProfile = (req, res) => {
   } else {
     res.json(null);
   };
+};
+
+export const setConfig = async (req, res) => {
+  try {
+    console.log("req.body: ", req.body);
+    
+    const { image, title, description, placeholder, variableName } = req.body;
+
+    if (!description) return res.json({ error: "Description required!" });
+    if (!image) return res.json({ error: "Image required!" });
+    if (!placeholder) return res.json({ error: "Placeholder required!" });
+    if (!title) return res.json({ error: "Title required!" });
+    if (!variableName) return res.json({ error: "VariableName required!" });
+
+    // Create pages in database
+    const pages = await pagesModel.create({ image, title, description, placeholder, variableName });
+    
+    if (!pages) return res.json({ error: "No page created" });
+
+    return res.json(pages);
+    
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getPages = async (req, res) => {
+  try {
+    const pages = await pagesModel.find({});
+    if (!pages) return res.json({ error: "No page found" });
+
+    return res.json(pages);
+
+  } catch (error) {
+    console.error(error);
+  }
 };

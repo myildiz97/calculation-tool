@@ -37,7 +37,7 @@ const Header = () => {
       const response = await axios.post("/logout");
       if (response.status === 200) {
         navigate("/login");
-        navigate(0)
+        navigate(0);
       } else {
         throw new Error("Failed to logout!");
       }

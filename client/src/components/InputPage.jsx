@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-// import axios from "axios";
-// import { toast } from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import CustomInput from '../forms/CustomInput.jsx';
 import FormInput from '../forms/FormInput.jsx';
 import ImageContainer from '../forms/ImageContainer.jsx';
@@ -37,7 +37,7 @@ const schema = z.object({
 });
 
 const InputPage = ({ inputPageNumber }) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [numberOfVars, setNumberOfVars] = useState(Array.from({ length: inputPageNumber }, () => null));
   const [inputNumbers, setInputNumbers] = useState(Array.from({ length: inputPageNumber }, () => []));
@@ -48,8 +48,25 @@ const InputPage = ({ inputPageNumber }) => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const { image, title, description, placeholder, variableName } = data;
+
+    console.log("image: ", image);
+
+    try {
+      const { data } = await axios.post("/admin", { image, title, description, placeholder, variableName });
+
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        toast.success("Pages are successfully set!");
+        navigate("/app");
+      };
+
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   const handleChange = (index, value, arr, setArr) => {
