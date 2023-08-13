@@ -12,19 +12,14 @@ const app = express();
 // Middleware
 app.use(cors({
   credentials: true,
-  origin: "http://localhost:5173",
-  // origin: "https://calculation-tool-client.vercel.app",
+  // origin: "http://localhost:5173",
+  origin: "https://calculation-tool-client.vercel.app",
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'https://calculation-tool-client.vercel.app');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   next();
-// });
+app.use(express.static("dist"));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URL, {

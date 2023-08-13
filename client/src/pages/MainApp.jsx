@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const MainApp = () => {
-  const baseUrlImg = "http://localhost:5000";
+  // const baseUrlImg = "http://localhost:5000";
+  const baseUrlImg = "https://calculation-tool.vercel.app";
 
   const [pages, setPages] = useState(null);
 
