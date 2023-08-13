@@ -7,8 +7,8 @@ import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import MainLayout from "./layouts/MainLayout";
 
-// axios.defaults.baseURL = "http://localhost:5000";
-axios.defaults.baseURL = "https://calculation-tool.vercel.app";
+axios.defaults.baseURL = "http://localhost:5000";
+// axios.defaults.baseURL = "https://calculation-tool.vercel.app";
 axios.defaults.withCredentials = true;
 
 const App = () => {
