@@ -9,6 +9,7 @@ import CustomInput from '../forms/CustomInput.jsx';
 import FormInput from '../forms/FormInput.jsx';
 import ImageContainer from '../forms/ImageContainer.jsx';
 import OutputInput from '../forms/OutputInput.jsx';
+import Calculation from '../forms/Calculation.jsx';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '../constants/constants.js';
 
 const schema = z.object({
@@ -58,6 +59,9 @@ const InputPage = ({ inputPageNumber }) => {
   const [numberOfOutputs, setNumberOfOutputs] = useState(null);
   const [outputNumbers, setOutputNumbers] = useState([]);
 
+  const [pageVars, setPageVars] = useState(new Array(inputPageNumber.length - 1).fill([]).map(() => []));
+  const [outputVars, setOutputVars] = useState([]);
+  
   const { handleSubmit, register, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
@@ -193,10 +197,40 @@ const InputPage = ({ inputPageNumber }) => {
                   />
                   {
                     index + 1 !== inputPageNumber.length
-                    ? <CustomInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
-                    : <OutputInput register={register} errors={errors} outputNumbers={outputNumbers} index={index} />
+                    ? <CustomInput 
+                        register={register} 
+                        errors={errors} 
+                        inputNumbers={inputNumbers[index]} 
+                        index={index}
+                        pageVars={pageVars}
+                        setPageVars={setPageVars}
+                      />
+                    : <OutputInput 
+                        register={register} 
+                        errors={errors} 
+                        outputNumbers={outputNumbers} 
+                        index={index}
+                        outputVars={outputVars}
+                        setOutputVars={setOutputVars}
+                        handleChange={handleChange}
+                      />
                   }
-                  {inputPageNumber.length === index + 1 ? <button type="submit" className="page-btn">Submit</button> : <hr className="page-hr" />}
+
+                  {inputPageNumber.length === index + 1 
+                    ? (
+                      <>
+                        <hr />
+                        <Calculation
+                          register={register}
+                          errors={errors}
+                          pageVars={pageVars}
+                          outputVars={outputVars}
+                        />
+                        <button type="submit" className="page-btn">Submit</button> 
+                      </>
+                    )
+                    : <hr className="page-hr" 
+                  />}
                 </form>
               </div>
             )

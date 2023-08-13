@@ -1,4 +1,12 @@
-const CustomInput = ({ inputNumbers=["0"], register, errors, index }) => {
+const CustomInput = ({ inputNumbers=["0"], register, errors, index, pageVars, setPageVars }) => {
+
+  const handleChange = (index, i, value, arr, setArr) => {
+    const newArr = [...arr];
+    const subArr = newArr[index];
+    subArr[i] = value;
+    setArr(newArr);
+  };
+
   return (
     <div className="custom-inputs">
       {inputNumbers.map((input, i) => (
@@ -18,7 +26,9 @@ const CustomInput = ({ inputNumbers=["0"], register, errors, index }) => {
             <input 
               id={`variable-${i}`}
               type="text"
-              {...register(`variableName.${index}.${i}`)}
+              {...register(`variableName.${index}.${i}`, {
+                onChange: (e) => handleChange(index, i, e.target.value, pageVars, setPageVars)
+              })}
               placeholder="varX"
             />
             {errors?.variableName?.[index]?.[i] && <p className="errors">{errors?.variableName?.[index]?.[i]?.message}</p>}

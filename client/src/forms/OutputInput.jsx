@@ -1,4 +1,4 @@
-const OutputInput = ({ outputNumbers=["0"], register, errors, index }) => {
+const OutputInput = ({ outputNumbers=["0"], register, errors, index, outputVars, setOutputVars, handleChange }) => {
 
   return (
     <div className="custom-inputs">
@@ -19,8 +19,10 @@ const OutputInput = ({ outputNumbers=["0"], register, errors, index }) => {
             <input 
               id={`value-output-${i}`}
               type="text"
-              {...register(`outputValue.${i}`)}
-              placeholder="(varX+varY)*100"
+              {...register(`outputValue.${i}`, {
+                onChange: (e) => handleChange(i, e.target.value, outputVars, setOutputVars)
+              })}
+              placeholder="A"
             />
             {errors?.outputValue?.[i] && <p className="errors">{errors?.outputValue?.[i]?.message}</p>}
           </div>
