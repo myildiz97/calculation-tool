@@ -13,7 +13,7 @@ import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '../constants/constants.js';
 const schema = z.object({
   image: z.array(z
     .any()
-    .refine((files) => files?.length !== 0, "Image is required.")
+    .refine((files) => files?.length !== 0, "File is required.")
     .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 50MB.`)
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
@@ -51,10 +51,18 @@ const InputPage = ({ inputPageNumber }) => {
   const onSubmit = async (data) => {
     const { image, title, description, placeholder, variableName } = data;
 
-    console.log("image: ", image);
+    const formData = new FormData();
+    for (let i = 0; i < image.length; i++) {
+      formData.append("image", image[i][0]);
+    };
+
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("placeholder", placeholder);
+    formData.append("variableName", variableName);
 
     try {
-      const { data } = await axios.post("/admin", { image, title, description, placeholder, variableName });
+      const { data } = await axios.post("/admin", formData);
 
       if (data.error) {
         toast.error(data.error);

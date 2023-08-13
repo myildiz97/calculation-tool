@@ -5,7 +5,7 @@ const ImageContainer = ({ register, errors, inputPageNumber, index }) => {
 
   const [backgroundImage, setBackgroundImage] = useState(Array.from({ length: inputPageNumber }, () => null));
 
-  const handleImage = (index, value) => {
+  const handleImage = async (index, value) => {
     const newImage = [...backgroundImage];
     newImage[index] = value;
     setBackgroundImage(newImage);
