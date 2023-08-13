@@ -14,7 +14,7 @@ const Header = () => {
       .catch((err) => console.log(err));
   }, [location.pathname]);
 
-  const activeStyleLogin = {
+  const activeStyleLoginAdmin = {
     textDecoration: "underline",
     color: "#118ab2",
     fontSize: "1.25em"
@@ -23,12 +23,6 @@ const Header = () => {
   const activeStyleRegister = {
     textDecoration: "underline",
     color: "#003049",
-    fontSize: "1.25em"
-  };
-
-  const activeStyleAdmin = {
-    textDecoration: "underline",
-    color: "#213ef4",
     fontSize: "1.25em"
   };
 
@@ -53,7 +47,7 @@ const Header = () => {
           <>
             <NavLink
               to="/login"
-              style={({isActive}) => isActive ? activeStyleLogin : null}
+              style={({isActive}) => isActive ? activeStyleLoginAdmin : null}
               >
               Login
             </NavLink>
@@ -69,7 +63,7 @@ const Header = () => {
           <>
             <NavLink
               to="/admin"
-              style={({isActive}) => isActive ? activeStyleAdmin : null}
+              style={({isActive}) => isActive ? activeStyleLoginAdmin : null}
             >
               Admin
             </NavLink>

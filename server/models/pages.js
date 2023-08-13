@@ -6,6 +6,9 @@ const pagesSchema = new mongoose.Schema({
   description: [ { type: String }, ],
   placeholder: [ { type: Array }, ],
   variableName: [ { type: Array }, ],
+  outputName: [ { type: String }, ],
+  outputValue: [ { type: String }, ],
+  outputUnit: [ { type: String }, ],
 });
 
 const pagesModel = mongoose.model("Pages", pagesSchema);

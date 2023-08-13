@@ -15,7 +15,7 @@ const MainApp = () => {
 
   return (
     <div className="app-wrapper">
-      {lastPage.error && <p>No page configured yet...</p>}
+      {lastPage?.error && <p>No page configured yet...</p>}
       
     </div>
   );

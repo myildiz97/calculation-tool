@@ -84,7 +84,8 @@ export const getProfile = (req, res) => {
 export const setConfig = async (req, res) => {
   try {
     
-    const { title, description, placeholder, variableName } = req.body;
+    const { title, description, placeholder, variableName,
+      outputName, outputValue, outputUnit} = req.body;
 
     const fileUrls = req.files.map(file => `/uploads/${file.filename}`);
 
@@ -92,10 +93,16 @@ export const setConfig = async (req, res) => {
     if (!fileUrls) return res.json({ error: "Image required!" });
     if (!placeholder) return res.json({ error: "Placeholder required!" });
     if (!title) return res.json({ error: "Title required!" });
-    if (!variableName) return res.json({ error: "VariableName required!" });
+    if (!variableName) return res.json({ error: "Variable name required!" });
+    if (!outputName) return res.json({ error: "Output name required!" });
+    if (!outputValue) return res.json({ error: "Output value required!" });
+    if (!outputUnit) return res.json({ error: "Output unit required!" });
 
     // Create pages in database
-    const pages = await pagesModel.create({ image: fileUrls, title, description, placeholder, variableName });
+    const pages = await pagesModel.create({ 
+      image: fileUrls, title, description, placeholder, variableName, 
+      outputName, outputValue, outputUnit 
+    });
     
     if (!pages) return res.json({ error: "No page created" });
 

@@ -26,11 +26,11 @@ const Admin = () => {
           <div className="form-inputNums">
             <label htmlFor="inputPageNumber">Enter the number of input pages: </label>
             <div>
-              <input type="number" id="inputPageNumber" placeholder="2" min="0" onChange={(e) => setNumberOfPages(e.target.value)} />
+              <input type="number" id="inputPageNumber" placeholder="2" min="0" onChange={(e) => setNumberOfPages(parseInt(e.target.value) + 1)} />
               <button onClick={() => {
                 if (!numberOfPages) setNumberError("Page number must be entered!");
-                if (numberOfPages < 0) {
-                  setNumberError("Page number cannot be negative!");
+                if (numberOfPages < 2) {
+                  setNumberError("Page number must be positive!");
                 } else {
                   const array = Array.from({ length: numberOfPages }, (_, index) => index.toString());
                   setInputPageNumber(array);

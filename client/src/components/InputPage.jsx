@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import CustomInput from '../forms/CustomInput.jsx';
 import FormInput from '../forms/FormInput.jsx';
 import ImageContainer from '../forms/ImageContainer.jsx';
+import OutputInput from '../forms/OutputInput.jsx';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '../constants/constants.js';
 
 const schema = z.object({
@@ -34,6 +35,16 @@ const schema = z.object({
     .nonempty("Variable is required!")
     .refine((value) => isNaN(Number(value)), "Variable name cannot be just a number")
   )),
+  outputName: z.array(z
+    .string()
+    .nonempty("Output name is required!")),
+  outputValue: z.array(z
+    .string()
+    .nonempty("Value is required!")
+    .refine((value) => isNaN(Number(value)), "Output value cannot be just a number")),
+  outputUnit: z.array(z
+    .string()
+    .nonempty("Unit is required!")),
 });
 
 const InputPage = ({ inputPageNumber }) => {
@@ -49,7 +60,8 @@ const InputPage = ({ inputPageNumber }) => {
   });
 
   const onSubmit = async (data) => {
-    const { image, title, description, placeholder, variableName } = data;
+    const { image, title, description, placeholder, variableName, 
+      outputName, outputValue, outputUnit } = data;
 
     const formData = new FormData();
     
@@ -59,6 +71,9 @@ const InputPage = ({ inputPageNumber }) => {
       formData.append("description", description[i]);
       formData.append("placeholder", placeholder[i]);
       formData.append("variableName", variableName[i]);
+      formData.append("outputName", outputName[i]);
+      formData.append("outputValue", outputValue[i]);
+      formData.append("outputUnit", outputUnit[i]);
     };
     
     try {
@@ -93,9 +108,20 @@ const InputPage = ({ inputPageNumber }) => {
         checkInputNums ? (
           inputPageNumber.map((page, index) => (
             <div key={"page" + index} className="form-inputNums">
-              <label htmlFor="inputNumber">Enter the number of variable inputs for page {index + 1}: </label>
+                <label htmlFor={`inputNumber-${index}`}>
+                  Enter the number of
+                  {index !== inputPageNumber.length - 1 ? 
+                    ` variable inputs for page ${index + 1}` :
+                    ` outputs for the output page`  
+                  }
+                </label>
               <div>
-                <input type="number" id="inputNumber" placeholder="3" min="0" onChange={(e) => handleChange(index, e.target.value, numberOfVars, setNumberOfVars)} />
+                <input 
+                  type="number" 
+                  id={`inputNumber-${index}`} 
+                  placeholder="3" min="0" 
+                  onChange={(e) => handleChange(index, e.target.value, numberOfVars, setNumberOfVars)} 
+                />
                 <button onClick={() => {
                   if (!numberOfVars[index]) handleChange(index, "Input number must be entered", numberError, setNumberError);
                   if (numberOfVars[index] < 0) {
@@ -104,7 +130,7 @@ const InputPage = ({ inputPageNumber }) => {
                     const array = Array.from({ length: numberOfVars[index] }, (_, i) => i.toString());
                     handleChange(index, array, inputNumbers, setInputNumbers);
                   };
-                  handleChange(index, "Variable Setted", btnVars, setBtnVars);
+                  handleChange(index, "Variable Set", btnVars, setBtnVars);
                   setTimeout(() => handleChange(index, "Set Variable", btnVars, setBtnVars), 3000)
                 }}>{btnVars[index]}</button>
               </div>
@@ -116,7 +142,10 @@ const InputPage = ({ inputPageNumber }) => {
 
             return (
               <div className="input-page" key={"pages - " + index}>
-                <h2 className="input-page-heading">Configurations of Page {index + 1}</h2>
+                <h2 className="input-page-heading">
+                  Configurations of 
+                  {index + 1 !== inputPageNumber.length ? ` Page ${index + 1}` : " Output Page"}
+                </h2>
                 <br />
                 <form noValidate onSubmit={handleSubmit(onSubmit)} className="input-page-form">
                   <ImageContainer
@@ -124,22 +153,26 @@ const InputPage = ({ inputPageNumber }) => {
                     errors={errors}
                     inputPageNumber={inputPageNumber} 
                     index={index}
-                    />
+                  />
                   <FormInput
                     register={register}
                     errors={errors}
                     name={"title"}
                     placeholder={"How many rooms and bathrooms are there in your home?"}
                     index={index}
-                    />
+                  />
                   <FormInput
                     register={register}
                     errors={errors}
                     name={"description"}
                     placeholder={"Fill in the following details about your home."}
                     index={index}
-                    />
-                  <CustomInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
+                  />
+                  {
+                    index + 1 !== inputPageNumber.length
+                    ? <CustomInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
+                    : <OutputInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
+                  }
                   {inputPageNumber.length === index + 1 ? <button type="submit" className="page-btn">Submit</button> : <hr className="page-hr" />}
                 </form>
               </div>

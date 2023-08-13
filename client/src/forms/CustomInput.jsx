@@ -20,7 +20,7 @@ const CustomInput = ({ inputNumbers=["0"], register, errors, index }) => {
               id={`variable-${i}`}
               type="text"
               {...register(`variableName.${index}.${i}`)}
-              placeholder="Enter custom placeholder..."
+              placeholder="varX"
             />
             {errors?.variableName?.[index]?.[i] && <p className="errors">{errors?.variableName?.[index]?.[i]?.message}</p>}
           </div>
