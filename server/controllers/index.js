@@ -106,12 +106,13 @@ export const setConfig = async (req, res) => {
   }
 };
 
-export const getPages = async (req, res) => {
+export const getLastPages = async (req, res) => {
   try {
-    const pages = await pagesModel.find({});
-    if (!pages) return res.json({ error: "No page found" });
+    const lastPage = await pagesModel.findOne({}, {}, { sort: { _id: -1 } });
 
-    return res.json(pages);
+    if (!lastPage) return res.json({ error: "No page found" });
+
+    return res.json(lastPage);
 
   } catch (error) {
     console.error(error);

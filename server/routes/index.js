@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { registerUser, loginUser, getProfile, logout, setConfig, getPages } from "../controllers/index.js";
+import { registerUser, loginUser, getProfile, logout, setConfig, getLastPages } from "../controllers/index.js";
 
 const router = express.Router();
 
@@ -14,7 +14,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-// const upload = multer({ dest: "uploads"});
 
 router.get("/", getProfile);
 
@@ -25,10 +24,7 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 
 router.post("/admin", upload.array("image", 100), setConfig);
-// router.post("/admin", upload.array("image", 100), (req, res) => {
-//   res.json(req.files);
-// });
 
-router.get("/app", getPages);
+router.get("/app", getLastPages);
 
 export default router;

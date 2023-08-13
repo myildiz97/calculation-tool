@@ -52,15 +52,15 @@ const InputPage = ({ inputPageNumber }) => {
     const { image, title, description, placeholder, variableName } = data;
 
     const formData = new FormData();
+    
     for (let i = 0; i < image.length; i++) {
       formData.append("image", image[i][0]);
+      formData.append("title", title[i]);
+      formData.append("description", description[i]);
+      formData.append("placeholder", placeholder[i]);
+      formData.append("variableName", variableName[i]);
     };
-
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("placeholder", placeholder);
-    formData.append("variableName", variableName);
-
+    
     try {
       const { data } = await axios.post("/admin", formData);
 
