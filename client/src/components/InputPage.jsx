@@ -50,10 +50,13 @@ const schema = z.object({
 const InputPage = ({ inputPageNumber }) => {
   const navigate = useNavigate();
 
-  const [numberOfVars, setNumberOfVars] = useState(Array.from({ length: inputPageNumber }, () => null));
-  const [inputNumbers, setInputNumbers] = useState(Array.from({ length: inputPageNumber }, () => []));
-  const [numberError, setNumberError] = useState(Array.from({ length: inputPageNumber }, () => null));
+  const [numberOfVars, setNumberOfVars] = useState(new Array(inputPageNumber.length - 1).fill(null));
+  const [inputNumbers, setInputNumbers] = useState(new Array(inputPageNumber.length - 1).fill([]));
+  const [numberError, setNumberError] = useState(new Array(inputPageNumber.length).fill(null));
   const [btnVars, setBtnVars] = useState(new Array(inputPageNumber.length).fill("Set Variable"));
+
+  const [numberOfOutputs, setNumberOfOutputs] = useState(null);
+  const [outputNumbers, setOutputNumbers] = useState([]);
 
   const { handleSubmit, register, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
@@ -64,17 +67,22 @@ const InputPage = ({ inputPageNumber }) => {
       outputName, outputValue, outputUnit } = data;
 
     const formData = new FormData();
-    
+
     for (let i = 0; i < image.length; i++) {
       formData.append("image", image[i][0]);
       formData.append("title", title[i]);
       formData.append("description", description[i]);
-      formData.append("placeholder", placeholder[i]);
-      formData.append("variableName", variableName[i]);
+      if (i !== image.length - 1) {
+        formData.append("placeholder", placeholder[i]);
+        formData.append("variableName", variableName[i]);
+      };
+    };
+
+    for (let i = 0; i < outputName.length; i++) {
       formData.append("outputName", outputName[i]);
       formData.append("outputValue", outputValue[i]);
       formData.append("outputUnit", outputUnit[i]);
-    };
+    }
     
     try {
       const { data } = await axios.post("/admin", formData);
@@ -98,9 +106,7 @@ const InputPage = ({ inputPageNumber }) => {
     setArr(newArr);
   };
 
-  // There is an error if more than 2 pages set
-  // Error: User must set the variables in the order of page number, otherwise an error occurs
-  const checkInputNums = inputNumbers.filter(i => i.length > 0).length !== inputPageNumber.length;
+  const checkInputNums = inputNumbers.filter(i => i.length > 0).length + (outputNumbers.length > 0 && 1) !== inputPageNumber.length;
 
   return (
     <>
@@ -120,16 +126,33 @@ const InputPage = ({ inputPageNumber }) => {
                   type="number" 
                   id={`inputNumber-${index}`} 
                   placeholder="3" min="0" 
-                  onChange={(e) => handleChange(index, e.target.value, numberOfVars, setNumberOfVars)} 
+                  onChange={(e) => {
+                    if (index !== inputPageNumber.length - 1) {
+                      handleChange(index, e.target.value, numberOfVars, setNumberOfVars);
+                    } else {
+                      setNumberOfOutputs(e.target.value);
+                    }
+                  }} 
                 />
                 <button onClick={() => {
-                  if (!numberOfVars[index]) handleChange(index, "Input number must be entered", numberError, setNumberError);
-                  if (numberOfVars[index] < 0) {
-                    handleChange(index, "Input number cannot be negative!", numberError, setNumberError);
+                  if (index !== inputPageNumber.length - 1) {
+                    if (!numberOfVars[index]) handleChange(index, "Input number must be entered", numberError, setNumberError);
+                    if (numberOfVars[index] < 0) {
+                      handleChange(index, "Input number cannot be negative!", numberError, setNumberError);
+                    } else {
+                      const array = Array.from({ length: numberOfVars[index]}, (_, i) => i.toString());
+                      handleChange(index, array, inputNumbers, setInputNumbers);
+                    };
                   } else {
-                    const array = Array.from({ length: numberOfVars[index] }, (_, i) => i.toString());
-                    handleChange(index, array, inputNumbers, setInputNumbers);
+                    if (!numberOfOutputs) handleChange(index, "Output number must be entered", numberError, setNumberError);
+                    if (numberOfOutputs< 0) {
+                      handleChange(index, "Output number cannot be negative!", numberError, setNumberError);
+                    } else {
+                      const array = Array.from({ length: numberOfOutputs}, (_, i) => i.toString());
+                      setOutputNumbers(array);
+                    };
                   };
+
                   handleChange(index, "Variable Set", btnVars, setBtnVars);
                   setTimeout(() => handleChange(index, "Set Variable", btnVars, setBtnVars), 3000)
                 }}>{btnVars[index]}</button>
@@ -143,7 +166,7 @@ const InputPage = ({ inputPageNumber }) => {
             return (
               <div className="input-page" key={"pages - " + index}>
                 <h2 className="input-page-heading">
-                  Configurations of 
+                  Configuration of 
                   {index + 1 !== inputPageNumber.length ? ` Page ${index + 1}` : " Output Page"}
                 </h2>
                 <br />
@@ -171,7 +194,7 @@ const InputPage = ({ inputPageNumber }) => {
                   {
                     index + 1 !== inputPageNumber.length
                     ? <CustomInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
-                    : <OutputInput register={register} errors={errors} inputNumbers={inputNumbers[index]} index={index} />
+                    : <OutputInput register={register} errors={errors} outputNumbers={outputNumbers} index={index} />
                   }
                   {inputPageNumber.length === index + 1 ? <button type="submit" className="page-btn">Submit</button> : <hr className="page-hr" />}
                 </form>

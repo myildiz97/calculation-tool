@@ -1,5 +1,4 @@
 const CustomInput = ({ inputNumbers=["0"], register, errors, index }) => {
-  
   return (
     <div className="custom-inputs">
       {inputNumbers.map((input, i) => (

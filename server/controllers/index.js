@@ -13,7 +13,7 @@ export const registerUser = async (req, res) => {
     // Check if password is valid
     if (!password || password.length < 8) return res.json({ error: "Password is required and should be at least 8 characters long" });
 
-    // Check email 
+    // Check if email exists
     const exist = await userModel.findOne({ email });
 
     if (exist) return res.json({ error: "Email is already taken"});
