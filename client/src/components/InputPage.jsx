@@ -53,6 +53,7 @@ const schema = z.object({
 
 const InputPage = ({ inputPageNumber }) => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [numberOfVars, setNumberOfVars] = useState(new Array(inputPageNumber.length - 1).fill(null));
   const [inputNumbers, setInputNumbers] = useState(new Array(inputPageNumber.length - 1).fill([]));
@@ -70,6 +71,8 @@ const InputPage = ({ inputPageNumber }) => {
   });
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
+
     const { image, title, description, placeholder, variableName, 
       outputName, outputValue, outputUnit, calculation } = data;
 
@@ -97,12 +100,14 @@ const InputPage = ({ inputPageNumber }) => {
 
       if (data.error) {
         toast.error(data.error);
+        setIsLoading(false);
       } else {
         toast.success("Pages are successfully set!");
         navigate("/app");
       };
 
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
 
@@ -122,13 +127,13 @@ const InputPage = ({ inputPageNumber }) => {
         checkInputNums ? (
           inputPageNumber.map((page, index) => (
             <div key={"page" + index} className="form-inputNums">
-                <label htmlFor={`inputNumber-${index}`}>
-                  Enter the number of
-                  {index !== inputPageNumber.length - 1 ? 
-                    ` variable inputs for page ${index + 1}` :
-                    ` outputs for the output page`  
-                  }
-                </label>
+              <label htmlFor={`inputNumber-${index}`}>
+                Enter the number of
+                {index !== inputPageNumber.length - 1 ? 
+                  ` variable inputs for page ${index + 1}` :
+                  ` outputs for the output page`  
+                }
+              </label>
               <div>
                 <input 
                   type="number" 
@@ -229,7 +234,11 @@ const InputPage = ({ inputPageNumber }) => {
                           errors={errors}
                           outputVars={outputVars}
                         />
-                        <button type="submit" className="page-btn">Submit</button> 
+                        <button type="submit" className="page-btn">
+                          {isLoading  
+                            ? <div className="loader"></div>
+                            : "Submit"}
+                        </button> 
                       </>
                     )
                     : <hr className="page-hr" />}

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { USER_ROLES } from "../../../server/constants/constans";
+import { useState } from "react";
 
 const schema = z.object({
   fullName: z
@@ -24,23 +25,27 @@ const schema = z.object({
 
 const Register = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { handleSubmit, register, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async ({ fullName, email, password, role }) => {
+    setIsLoading(true);
     try {
       const { data } = await axios.post("/register", { fullName, email, password, role });
 
       if (data.error) {
         toast.error(data.error);
+        setIsLoading(false);
       } else {
         toast.success("Registration is successfully completed!");
         navigate("/login");
       };
 
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   };
@@ -88,7 +93,11 @@ const Register = () => {
           </select>
           {errors?.role && <p className="errors">{errors?.role?.message}</p>}
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">
+          {isLoading  
+            ? <div className="loader"></div>
+            : "Register"}
+        </button>
       </form>
     </div>
   );

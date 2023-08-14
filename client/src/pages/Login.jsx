@@ -4,7 +4,7 @@ import { z } from 'zod';
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { USER_ROLES } from '../../../server/constants/constans';
 
 const schema = z.object({
@@ -20,6 +20,7 @@ const schema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     axios.get("/")
@@ -32,15 +33,18 @@ const Login = () => {
   });
 
   const onSubmit = async ({ email, password }) => {
+    setIsLoading(true);
     try {
       const { data } = await axios.post("/login", { email, password });
       if (data.error) {
         toast.error(data?.error);
+        setIsLoading(false);
       } else {
         toast.success("Login is successfull!");
         data?.role === USER_ROLES[1] ? navigate("/admin") : setTimeout(() => navigate(0), 2000);
       };
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
   };
@@ -69,7 +73,11 @@ const Login = () => {
           />
           {errors?.password && <p className="errors">{errors?.password?.message}</p>}
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">
+          {isLoading
+            ? <div className="loader"></div>
+            : "Login"}
+        </button>
       </form>
     </div>
   );
