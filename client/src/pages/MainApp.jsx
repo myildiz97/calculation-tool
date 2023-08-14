@@ -50,12 +50,7 @@ const MainApp = () => {
                       <div className="app-info-output">
                         {
                           lastPage?.outputValue.map((value, i) => (
-                            <input
-                              key={"output-" + i}
-                              type="number"
-                              id={value}
-                              placeholder={lastPage?.outputName[i]}
-                            />
+                            <p key={"outputname-" + i}>{lastPage?.outputName[i] + ": "} <span>{value}</span></p>
                           ))
                         }
                       </div>
