@@ -74,9 +74,9 @@ const MainApp = () => {
       <>
         {
           lastPage && lastPage?.image?.map((page, index) => (
-            <div key={index} style={{ display: index === currentPage ? 'block' : 'none' }}>
+            <div key={index} style={{ display: index === currentPage ? "block" : "none", width: "100%" }}>
               <div className="app-img">
-                <img src={baseUrlImg + lastPage?.image[index]} width={60} />
+                <img src={baseUrlImg + lastPage?.image[index]} />
               </div>
               <div className="app-info">
                 <div className="app-info-header">
@@ -90,6 +90,7 @@ const MainApp = () => {
                           <input
                             key={`${name}-${i}`}
                             type="number"
+                            min={0}
                             id={name}
                             placeholder={lastPage?.placeholder[index][0].split(",")[i]}
                             onChange={e => handleChange(name, e.target.value)}
@@ -102,8 +103,8 @@ const MainApp = () => {
                         {
                           lastPage?.outputValue.map((value, i) => (
                             <p key={"outputname-" + i}>
-                              {lastPage?.outputName[i] + "= "}
-                              <span>{outputValues[i] ? outputValues[i] : "No calculation"}</span>
+                              <span>{lastPage?.outputName[i] + ": "}</span>
+                              <span>{outputValues[i] ? outputValues[i] : "No calculation yet"}</span>
                               <span> {outputValues[i] && lastPage?.outputUnit[i]}</span>
                             </p>
                           ))
@@ -115,8 +116,12 @@ const MainApp = () => {
             </div>
           ))
         }
-        <div>
-          {currentPage !== 0 && <button onClick={handlePrev}>Back</button>}
+        <div className="next-back-btn">
+          {currentPage !== 0 && 
+            <button 
+              style={currentPage === lastPage?.image?.length - 1 ? {marginRight: "auto", marginLeft: "0"} : null} 
+              onClick={handlePrev}
+            >Back</button>}
           {currentPage !== lastPage?.image?.length - 1 && <button onClick={handleNext}>Forward</button>}
         </div>
       </>

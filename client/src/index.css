@@ -212,3 +212,69 @@ input[type='file'] {
 .page-btn {
   margin-bottom: 20px;
 }
+
+.app-wrapper {
+  padding: 20px 0;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.app-img img {
+  width: 100%;
+  max-height: 300px;
+}
+
+.app-info, .app-info-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.app-info-header {
+  gap: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  margin: 20px 0;
+  color: #fff;
+}
+
+.app-info-inputs, .app-info-inputs input {
+  width: 100%;
+}
+
+.app-info-inputs input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 20px;
+}
+
+.next-back-btn {
+  width: 100%;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.next-back-btn button {
+  width: 50%;
+  margin: 0;
+  margin-left: auto;
+}
+
+.app-info-output {
+  width: 100%;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.app-info-output p span:first-of-type {
+  font-weight: bold;
+}
