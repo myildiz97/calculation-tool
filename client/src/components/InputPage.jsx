@@ -58,7 +58,7 @@ const InputPage = ({ inputPageNumber }) => {
   const [numberOfVars, setNumberOfVars] = useState(new Array(inputPageNumber.length - 1).fill(null));
   const [inputNumbers, setInputNumbers] = useState(new Array(inputPageNumber.length - 1).fill([]));
   const [numberError, setNumberError] = useState(new Array(inputPageNumber.length).fill(null));
-
+  
   const [numberOfOutputs, setNumberOfOutputs] = useState(null);
   const [outputNumbers, setOutputNumbers] = useState([]);
 

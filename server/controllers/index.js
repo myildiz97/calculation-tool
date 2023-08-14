@@ -2,6 +2,7 @@ import userModel from "../models/user.js";
 import pagesModel from "../models/pages.js";
 import { hashPassword, comparePassword } from "../helpers/index.js";
 import jwt from "jsonwebtoken";
+import * as math from 'mathjs';
 
 export const registerUser = async (req, res) => {
   try {
@@ -125,5 +126,23 @@ export const getLastPages = async (req, res) => {
 
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const setResults = async (req, res) => {
+  const results = [];
+  
+  try {
+    const { expressions } = req.body;
+    const parsedExp = JSON.parse(expressions);
+
+    for (const expr of parsedExp) {
+      const result = await math.evaluate(expr);
+      results.push(result);
+    };
+    
+    res.status(200).json({ results });
+  } catch (error) {
+    res.status(400).json({ error: "Invalid expression or calculation error." });
   }
 };

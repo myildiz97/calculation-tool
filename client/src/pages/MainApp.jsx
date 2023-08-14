@@ -49,23 +49,20 @@ const MainApp = () => {
     return expression;
   };
 
+  const objLen = Object.keys(inputValues).length;
   const expressions = useMemo(() => lastPage && [...lastPage?.calculation], [lastPage]);
-  const trigger = useMemo(() => expressions && Object.keys(inputValues).length === varNum, [expressions, inputValues, varNum]);
+  const trigger = useMemo(() => expressions && objLen === varNum, [expressions, inputValues, varNum]);
+  const btnTrigger = useMemo(() => objLen < 1);
 
   useEffect(() => {
     if (trigger) {
-      const newOutputValues = expressions.map((e) => {
-        const modifiedExpression = replaceVariables(e);
-        return eval(modifiedExpression);
-      });
-      setOutputValues((prevOutputValues) => {
-        const updatedOutputValues = [...prevOutputValues];
-        newOutputValues.forEach((value, index) => {
-          updatedOutputValues[index] = value;
-        });
-        return updatedOutputValues;
-      });
-    }
+      const expressionsArr = [...expressions];
+      const newExpressionsArr= expressionsArr.map((e) => replaceVariables(e));
+
+      axios.post('/calculation', { expressions: JSON.stringify(newExpressionsArr) })
+        .then(({ data }) => setOutputValues(data?.results))
+        .catch(error => console.error('Error calculating:', error));
+    };
   }, [trigger]);
 
   return (
@@ -122,7 +119,13 @@ const MainApp = () => {
               style={currentPage === lastPage?.image?.length - 1 ? {marginRight: "auto", marginLeft: "0"} : null} 
               onClick={handlePrev}
             >Back</button>}
-          {currentPage !== lastPage?.image?.length - 1 && <button onClick={handleNext}>Forward</button>}
+          {currentPage !== lastPage?.image?.length - 1 && 
+            <button 
+              onClick={handleNext}
+              disabled={btnTrigger}
+              style={{cursor: btnTrigger ? "not-allowed" : "pointer"}}
+            >
+              Forward</button>}
         </div>
       </>
     </div>

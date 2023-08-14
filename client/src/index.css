@@ -262,10 +262,13 @@ input[type='file'] {
 
 .app-info-header {
   gap: 10px;
-  word-wrap: break-word;
-  word-break: break-all;
   margin: 20px 0;
   color: #fff;
+}
+
+.app-info-header h1, .app-info-header h3 {
+  text-align: start;
+  word-wrap: break-word;
 }
 
 .app-info-inputs, .app-info-inputs input {
