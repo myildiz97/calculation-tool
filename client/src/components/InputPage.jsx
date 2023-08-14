@@ -46,6 +46,9 @@ const schema = z.object({
   outputUnit: z.array(z
     .string()
     .nonempty("Unit is required!")),
+  calculation: z.array(z
+    .string()
+    .nonempty("Calculation setting is required!")),
 });
 
 const InputPage = ({ inputPageNumber }) => {
@@ -68,7 +71,7 @@ const InputPage = ({ inputPageNumber }) => {
 
   const onSubmit = async (data) => {
     const { image, title, description, placeholder, variableName, 
-      outputName, outputValue, outputUnit } = data;
+      outputName, outputValue, outputUnit, calculation } = data;
 
     const formData = new FormData();
 
@@ -86,6 +89,7 @@ const InputPage = ({ inputPageNumber }) => {
       formData.append("outputName", outputName[i]);
       formData.append("outputValue", outputValue[i]);
       formData.append("outputUnit", outputUnit[i]);
+      formData.append("calculation", calculation[i]);
     }
     
     try {
@@ -219,18 +223,16 @@ const InputPage = ({ inputPageNumber }) => {
                   {inputPageNumber.length === index + 1 
                     ? (
                       <>
-                        <hr />
+                        <hr className="page-hr" />
                         <Calculation
                           register={register}
                           errors={errors}
-                          pageVars={pageVars}
                           outputVars={outputVars}
                         />
                         <button type="submit" className="page-btn">Submit</button> 
                       </>
                     )
-                    : <hr className="page-hr" 
-                  />}
+                    : <hr className="page-hr" />}
                 </form>
               </div>
             )

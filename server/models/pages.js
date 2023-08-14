@@ -9,6 +9,7 @@ const pagesSchema = new mongoose.Schema({
   outputName: [ { type: String }, ],
   outputValue: [ { type: String }, ],
   outputUnit: [ { type: String }, ],
+  calculation: [ { type: String }, ],
 });
 
 const pagesModel = mongoose.model("Pages", pagesSchema);
