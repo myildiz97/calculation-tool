@@ -58,7 +58,6 @@ const InputPage = ({ inputPageNumber }) => {
   const [numberOfVars, setNumberOfVars] = useState(new Array(inputPageNumber.length - 1).fill(null));
   const [inputNumbers, setInputNumbers] = useState(new Array(inputPageNumber.length - 1).fill([]));
   const [numberError, setNumberError] = useState(new Array(inputPageNumber.length).fill(null));
-  const [btnVars, setBtnVars] = useState(new Array(inputPageNumber.length).fill("Set Variable"));
 
   const [numberOfOutputs, setNumberOfOutputs] = useState(null);
   const [outputNumbers, setOutputNumbers] = useState([]);
@@ -119,25 +118,60 @@ const InputPage = ({ inputPageNumber }) => {
     setArr(newArr);
   };
 
+  const handleClick = () => {
+    const lastIndex = numberOfVars?.length;
+
+    let newInputNumbers = [...inputNumbers];
+    let newErrors = [...numberError];
+
+    numberOfVars.forEach((v, index) => {
+      console.log("v: ", v,"index: ", index);
+      if (!v) {
+        newErrors[index] = "Input number must be entered!";
+      } else if (v <= 0) {
+        newErrors[index] = "Input number must be positive!";
+      } else {
+        const array = Array.from({ length: v }, (_, i) => i.toString());
+        newInputNumbers[index] = array;
+        newErrors[index] = null;
+      };
+    });
+
+    setInputNumbers(newInputNumbers);
+    
+    if (!numberOfOutputs) {
+      newErrors[lastIndex] = "Output number must be entered!";
+    } else if (numberOfOutputs <= 0) {
+      newErrors[lastIndex] = "Output number must be positive!";
+    } else {
+      const array = Array.from({ length: numberOfOutputs}, (_, i) => i.toString());
+      setOutputNumbers(array);
+      newErrors[lastIndex] = null;
+    };
+
+    setNumberError(newErrors);
+  };
+
   const checkInputNums = inputNumbers.filter(i => i.length > 0).length + (outputNumbers.length > 0 && 1) !== inputPageNumber.length;
 
   return (
     <>
       {
         checkInputNums ? (
-          inputPageNumber.map((page, index) => (
-            <div key={"page" + index} className="form-inputNums">
-              <label htmlFor={`inputNumber-${index}`}>
-                Enter the number of
-                {index !== inputPageNumber.length - 1 ? 
-                  ` variable inputs for page ${index + 1}` :
-                  ` outputs for the output page`  
-                }
-              </label>
-              <div>
+          <>
+            {inputPageNumber.map((page, index) => (
+              <div key={"page" + index} className="form-inputNums">
+                <label htmlFor={`inputNumber-${index}`}>
+                  Enter the number of
+                  {index !== inputPageNumber.length - 1 ? 
+                    ` variable inputs for page ${index + 1}` :
+                    ` outputs for the output page`  
+                  }
+                </label>
                 <input 
                   type="number" 
-                  id={`inputNumber-${index}`} 
+                  id={`inputNumber-${index}`}
+                  className="var-inputs" 
                   placeholder="3" min="0" 
                   onChange={(e) => {
                     if (index !== inputPageNumber.length - 1) {
@@ -147,32 +181,11 @@ const InputPage = ({ inputPageNumber }) => {
                     }
                   }} 
                 />
-                <button onClick={() => {
-                  if (index !== inputPageNumber.length - 1) {
-                    if (!numberOfVars[index]) handleChange(index, "Input number must be entered", numberError, setNumberError);
-                    if (numberOfVars[index] < 0) {
-                      handleChange(index, "Input number cannot be negative!", numberError, setNumberError);
-                    } else {
-                      const array = Array.from({ length: numberOfVars[index]}, (_, i) => i.toString());
-                      handleChange(index, array, inputNumbers, setInputNumbers);
-                    };
-                  } else {
-                    if (!numberOfOutputs) handleChange(index, "Output number must be entered", numberError, setNumberError);
-                    if (numberOfOutputs< 0) {
-                      handleChange(index, "Output number cannot be negative!", numberError, setNumberError);
-                    } else {
-                      const array = Array.from({ length: numberOfOutputs}, (_, i) => i.toString());
-                      setOutputNumbers(array);
-                    };
-                  };
-
-                  handleChange(index, "Variable Set", btnVars, setBtnVars);
-                  setTimeout(() => handleChange(index, "Set Variable", btnVars, setBtnVars), 3000)
-                }}>{btnVars[index]}</button>
+                {numberError[index] && <p className="errors" style={{marginTop: "0"}}>{numberError[index]}</p>}
               </div>
-              {numberError[index] && <p className="errors">{numberError[index]}</p>}
-            </div>
-          ))
+            ))}
+            <button onClick={handleClick} className="set-var-btn">Set Variables</button>
+          </>
         ) : (
           inputPageNumber.map((page, index) => {
 
