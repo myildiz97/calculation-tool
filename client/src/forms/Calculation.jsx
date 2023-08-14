@@ -6,7 +6,7 @@ const Calculation = ({ register, errors, outputVars }) => {
       {
         outputVars.every(o => o.length > 0) && outputVars.map((outputVar, index) => (
           <div className="form-inputs" key={outputVar + index}>
-            <label htmlFor={`calc${index}`}>{outputVar}: </label>
+            <label htmlFor={`calc${index}`}>{outputVar}= </label>
             <input 
               id={`calc${index}`} 
               type="text"
