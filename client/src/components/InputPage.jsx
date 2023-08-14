@@ -125,7 +125,6 @@ const InputPage = ({ inputPageNumber }) => {
     let newErrors = [...numberError];
 
     numberOfVars.forEach((v, index) => {
-      console.log("v: ", v,"index: ", index);
       if (!v) {
         newErrors[index] = "Input number must be entered!";
       } else if (v <= 0) {

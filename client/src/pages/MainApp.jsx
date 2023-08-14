@@ -9,7 +9,8 @@ const MainApp = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [varNum, setVarNum] = useState(null);
   const [inputValues, setInputValues] = useState({});
-  const [outputValues, setOutputValues] = useState(null);
+  const [outputValues, setOutputValues] = useState({});
+  const [outputVals, setOutputVals] = useState(null);
 
   useEffect(() => {
     axios.get("/app")
@@ -22,7 +23,7 @@ const MainApp = () => {
           });
           return total;
         });
-        setOutputValues(new Array(data.outputName.length).fill(null));
+        setOutputVals(data?.outputValue);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -40,11 +41,13 @@ const MainApp = () => {
   
   const replaceVariables = (expression) => {
     const variables = Object.keys(inputValues);
-  
+
     for (const variable of variables) {
       const value = inputValues[variable];
       expression = expression.replace(new RegExp(variable, 'g'), value);
     };
+
+    expression = expression.replace(/[A-Za-z]/g, char => `FILL!${char}!`);
   
     return expression;
   };
@@ -57,9 +60,9 @@ const MainApp = () => {
   useEffect(() => {
     if (trigger) {
       const expressionsArr = [...expressions];
-      const newExpressionsArr= expressionsArr.map((e) => replaceVariables(e));
+      const newExpressionsArr = expressionsArr.map((e) => replaceVariables(e));
 
-      axios.post('/calculation', { expressions: JSON.stringify(newExpressionsArr) })
+      axios.post('/calculation', { expressions: JSON.stringify(newExpressionsArr), outputs: JSON.stringify(outputVals) })
         .then(({ data }) => setOutputValues(data?.results))
         .catch(error => console.error('Error calculating:', error));
     };
@@ -101,7 +104,7 @@ const MainApp = () => {
                           lastPage?.outputValue.map((value, i) => (
                             <p key={"outputname-" + i}>
                               <span>{lastPage?.outputName[i] + ": "}</span>
-                              <span>{outputValues[i] ? outputValues[i] : "No calculation yet"}</span>
+                              <span>{outputValues?.[lastPage?.outputValue?.[i]] ? outputValues?.[lastPage?.outputValue?.[i]] : "No calculation yet"}</span>
                               <span> {outputValues[i] && lastPage?.outputUnit[i]}</span>
                             </p>
                           ))

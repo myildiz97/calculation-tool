@@ -130,15 +130,30 @@ export const getLastPages = async (req, res) => {
 };
 
 export const setResults = async (req, res) => {
-  const results = [];
-  
-  try {
-    const { expressions } = req.body;
-    const parsedExp = JSON.parse(expressions);
+  const results = {};
 
-    for (const expr of parsedExp) {
-      const result = await math.evaluate(expr);
-      results.push(result);
+  try {
+    const { expressions, outputs } = req.body;
+    const parsedExp = JSON.parse(expressions);
+    const parsedOutputs = JSON.parse(outputs);
+
+    parsedOutputs.forEach(key => results[key] = null);
+
+    const pattern = /FILL!([A-Za-z]+)!/;
+
+    for (const [index, expr] of parsedExp.entries()) {
+      let newExp = null;
+      if (expr.match(pattern)) {
+        const startIndex = expr.indexOf('!') + 1;
+        const endIndex = expr.lastIndexOf('!');
+        const char = expr.substring(startIndex, endIndex);
+        const value = results[char];
+        newExp = expr.replace(new RegExp(`FILL!${char}!`, 'g'), value);
+      };
+
+      const result = newExp ? await math.evaluate(newExp) : await math.evaluate(expr);
+      const key = parsedOutputs[index];
+      results[key] = result;
     };
     
     res.status(200).json({ results });
