@@ -1,5 +1,4 @@
 {
-  "homepage": "https://calculation-tool-client.vercel.app",
   "name": "client",
   "private": true,
   "version": "0.0.0",
