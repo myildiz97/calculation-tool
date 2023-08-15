@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { registerUser, loginUser, getProfile, logout, setConfig, 
-  getLastPages, setResults, getConfigName} from "../controllers/index.js";
+  getLastPages, setResults, getConfigName, getPages, getPageById } from "../controllers/index.js";
 
 const router = express.Router();
 
@@ -30,6 +30,12 @@ router.post("/admin", upload.array("image", 100), setConfig);
 
 router.get("/app", getLastPages);
 
+router.get("/pages", getPages);
+
+router.get("/pages/:id", getPageById);
+
 router.post("/calculation", setResults);
+
+// router.put("/admin/update", updatePage);
 
 export default router;

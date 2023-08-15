@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Admin from "./pages/Admin";
 import MainApp from "./pages/MainApp";
 import NewPage from "./pages/NewPage";
+import EditPage from "./pages/EditPage";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import MainLayout from "./layouts/MainLayout";
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="register" element={<Register />} />
           <Route path="admin" element={<Admin />} />
           <Route path="admin/add/:configName" element={<NewPage />} />
+          <Route path="admin/edit/:id" element={<EditPage />} />
           <Route path="app" element={<MainApp />} />
         </Route>
       </Routes>

@@ -319,16 +319,16 @@ input[type='file'] {
   border: none;
 }
 
-.new-page-btn {
+.new-page-btn, .ex-page-btn {
   margin: 0;
   background: none;
   width: fit-content;
   color: #e63946;
   cursor: pointer;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
-.new-page-btn:hover {
+.new-page-btn:hover, .ex-page-btn:hover {
   opacity: 1;
   font-weight: bold;
 }
@@ -340,4 +340,39 @@ input[type='file'] {
   flex-direction: column;
   justify-content: start;
   padding-top: 20px;
+}
+
+.existing-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.existing-page {
+  background: #e63946;
+  border: none;
+  border-radius: 10px;
+  opacity: 0.8;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 10px;
+}
+
+.existing-page:hover {
+  opacity: 1;
+}
+
+.ex-page-name {
+  width: 100%;
+  margin-right: auto;
+  padding: 20px 0;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2em;
+  border-right: 2px solid rgba(255, 255, 255, .8);
 }

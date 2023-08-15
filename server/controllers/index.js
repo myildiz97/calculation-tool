@@ -28,6 +28,7 @@ export const registerUser = async (req, res) => {
 
   } catch (error) {
     console.error(error);
+    return res.json({ error: "User not created!"});
   }
 };
 
@@ -48,38 +49,49 @@ export const loginUser = async (req, res) => {
         res.cookie("token", token).json(user);
       });
     } else {
-      res.json({ error: "Passwords do not match" });
+      res.json({ error: "Email or password wrong!" });
     }
   } catch (error) {
     console.log(error);
+    return res.json({ error: "Invalid credentials!"});
   }
 };
 
 const invalidatedTokens = new Set();
 
 export const logout = (req, res) => {
-  const { token } = req.cookies;
+  try {
+    const { token } = req.cookies;
 
-  if (token) {
-    invalidatedTokens.add(token);
-    res.clearCookie("token");
-    res.json({ status: 200 });
-  } else {
-    res.status(400).json({ error: "No token found" });
-  };
+    if (token) {
+      invalidatedTokens.add(token);
+      res.clearCookie("token");
+      res.json({ status: 200 });
+    } else {
+      res.status(400).json({ error: "No token found" });
+    };
+  } catch (error) {
+    console.error(error); 
+    return res.json({ error: "No user to be logged out!"});
+  }
 };
 
 export const getProfile = (req, res) => {
-  const { token } = req.cookies;
+  try {
+    const { token } = req.cookies;
 
-  if (token && !invalidatedTokens.has(token)) {
-    jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
-      if (err) throw err;
-      res.json(user);
-    })
-  } else {
-    res.json(null);
-  };
+    if (token && !invalidatedTokens.has(token)) {
+      jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+        if (err) throw err;
+        res.json(user);
+      })
+    } else {
+      res.json(null);
+    };
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "No user found!"});
+  }
 };
 
 export const getConfigName = async (req, res) => {
@@ -94,7 +106,7 @@ export const getConfigName = async (req, res) => {
     return res.json({ configName });
   } catch (error) {
     console.error(error);
-    return res.json({ error: "Config name could not obtained!"})
+    return res.json({ error: "Config name could not obtained!"});
   }
 };
 
@@ -129,6 +141,7 @@ export const setConfig = async (req, res) => {
     
   } catch (error) {
     console.error(error);
+    return res.json({ error: "Pages could not created!"});
   }
 };
 
@@ -142,8 +155,20 @@ export const getLastPages = async (req, res) => {
 
   } catch (error) {
     console.error(error);
+    return res.json({ error: "Page not found!"});
   }
 };
+
+export const getPages = async (req, res) => {
+  try {
+    const pages = await pagesModel.find({});
+    if (!pages) return res.json({ error: "Pages not found" });
+    return res.json(pages);
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "No pages to be found!"});
+  }
+}
 
 export const setResults = async (req, res) => {
   const results = {};
@@ -174,6 +199,37 @@ export const setResults = async (req, res) => {
     
     res.status(200).json({ results });
   } catch (error) {
+    console.error(error);
     res.status(400).json({ error: "Invalid expression or calculation error." });
   }
 };
+
+export const getPageById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log("id: ", id);
+
+    const page = await pagesModel.find({ _id: id });
+
+    console.log("page: ", page);
+
+    if (!page) return res.json({ error: `Page with the id of ${id} not found!`});
+
+    return res.json({ page });
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Page with id not obtained!"});
+  }
+};
+
+// export const updatePage = async (req, res) => {
+//   try {
+//     const { id } = req.body;
+
+//     if (!id) return res.json({ error: "Page ID is required!"});
+
+//     const updatedPage = 
+//   } catch (error) {
+    
+//   }
+// }
