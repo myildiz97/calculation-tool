@@ -10,7 +10,8 @@ const EditImage = ( { register, errors, image, index }) => {
     setBackgroundImage(newImage);
   };
 
-  const baseUrlImg = "http://localhost:5000";
+  // const baseUrlImg = "http://localhost:5000";
+  const baseUrlImg = "https://calculation-tool-api.vercel.app/";
 
   return (
     <div className="form-inputs">
