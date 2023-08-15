@@ -1,9 +1,9 @@
 import express from "express";
 import multer from "multer";
+import cors from "cors";
 import { registerUser, loginUser, getProfile, logout, setConfig, 
   setResults, getConfigName, getPages, getPageById , getLastPage,
   updatePage, deletePage } from "../controllers/index.js";
-import cors from "cors";  
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.use(cors({
-  origin: "https://calculation-tool-client.vercel.app",
+  origin: "https://velvety-belekoy-bde7bb.netlify.app",
   credentials: true,
 }));
 
