@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 
 app.use(cors({
-  origin: "https://calculation-tool-client.vercel.app", // origin: "http://localhost:5173",
+  origin: "https://velvety-belekoy-bde7bb.netlify.app", // origin: "http://localhost:5173",
   credentials: true,
 }));
 
