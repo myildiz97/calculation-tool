@@ -207,11 +207,8 @@ export const setResults = async (req, res) => {
 export const getPageById = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("id: ", id);
 
     const page = await pagesModel.find({ _id: id });
-
-    console.log("page: ", page);
 
     if (!page) return res.json({ error: `Page with the id of ${id} not found!`});
 
@@ -222,14 +219,38 @@ export const getPageById = async (req, res) => {
   }
 };
 
-// export const updatePage = async (req, res) => {
-//   try {
-//     const { id } = req.body;
+export const updatePage = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     if (!id) return res.json({ error: "Page ID is required!"});
+    if (!id) return res.json({ error: "Page ID is required!"});
 
-//     const updatedPage = 
-//   } catch (error) {
-    
-//   }
-// }
+    const { title, description, placeholder, variableName, outputName, outputValue, outputUnit, calculation } = req.body;
+
+    const fileUrls = req.files.map(file => `/uploads/${file.filename}`);
+
+    const updatedPage = await pagesModel.findByIdAndUpdate(
+      id,
+      {
+        image: fileUrls,
+        title,
+        description,
+        placeholder,
+        variableName,
+        outputName,
+        outputValue,
+        outputUnit,
+        calculation,
+      },
+      { new: true }
+    );
+
+    if (!updatedPage)  return res.json({ error: "Page not updated!" });
+
+    return res.json({ updatedPage });
+
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Error updating page!" });
+  }
+};

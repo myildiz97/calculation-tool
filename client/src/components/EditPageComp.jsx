@@ -10,7 +10,6 @@ import EditCustomOutput from '../editForms/EditCustomOutput.jsx';
 import EditHeader from '../editForms/EditHeader.jsx';
 import EditImage from '../editForms/EditImage.jsx';
 import EditCalculation from '../editForms/EditCalculation.jsx';
-import Calculation from '../forms/Calculation.jsx';
 import { MAX_FILE_SIZE, ACCEPTED_IMAGE_TYPES } from '../constants/constants.js';
 
 const schema = z.object({
@@ -53,68 +52,63 @@ const schema = z.object({
 });
 
 const EditPageComp = ({ page }) => {
-  const { image, title, description, placeholder,
+  const { _id , image, title, description, placeholder,
    variableName, outputName, outputValue, outputUnit,
    calculation } = page;
 
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const { handleSubmit, register, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setIsLoading(true);
 
-    // setIsLoading(true);
+    const { image, title, description, placeholder, variableName, 
+      outputName, outputValue, outputUnit, calculation } = data;
 
-    // const { image, title, description, placeholder, variableName, 
-    //   outputName, outputValue, outputUnit, calculation } = data;
+    const formData = new FormData();
 
-    // const formData = new FormData();
+    for (let i = 0; i < image.length; i++) {
+      formData.append("image", image[i][0]);
+      formData.append("title", title[i]);
+      formData.append("description", description[i]);
+      if (i !== image.length - 1) {
+        formData.append("placeholder", placeholder[i]);
+        formData.append("variableName", variableName[i]);
+      };
+    };
 
-    // for (let i = 0; i < image.length; i++) {
-    //   formData.append("image", image[i][0]);
-    //   formData.append("title", title[i]);
-    //   formData.append("description", description[i]);
-    //   if (i !== image.length - 1) {
-    //     formData.append("placeholder", placeholder[i]);
-    //     formData.append("variableName", variableName[i]);
-    //   };
-    // };
+    for (let i = 0; i < outputName.length; i++) {
+      formData.append("outputName", outputName[i]);
+      formData.append("outputValue", outputValue[i]);
+      formData.append("outputUnit", outputUnit[i]);
+      formData.append("calculation", calculation[i]);
+    }
 
-    // for (let i = 0; i < outputName.length; i++) {
-    //   formData.append("outputName", outputName[i]);
-    //   formData.append("outputValue", outputValue[i]);
-    //   formData.append("outputUnit", outputUnit[i]);
-    //   formData.append("calculation", calculation[i]);
-    // }
+    try {
+      const { data } = await axios.put(`/admin/edit/${_id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }});
 
-    // formData.append("configName", configName);
-    
-    // try {
-    //   const { data } = await axios.post("/admin", formData);
+      if (data.error) {
+        toast.error(data.error);
+        setIsLoading(false);
+      } else {
+        toast.success("Pages are successfully modified!");
+        navigate("/app");
+      };
 
-    //   if (data.error) {
-    //     toast.error(data.error);
-    //     setIsLoading(false);
-    //   } else {
-    //     toast.success("Pages are successfully set!");
-    //     navigate("/app");
-    //   };
-
-    // } catch (error) {
-    //   setIsLoading(false);
-    //   console.error(error);
-    // }
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+    }
 
   };
-
-  // const handleChange = (index, value, arr, setArr) => {
-  //   const newArr = [...arr];
-  //   newArr[index] = value;
-  //   setArr(newArr);
-  // };
 
   return (
     <>
@@ -178,10 +172,9 @@ const EditPageComp = ({ page }) => {
                     calculation={calculation}
                   />
                   <button type="submit" className="page-btn">
-                    Submit
-                    {/* {isLoading  
+                    {isLoading  
                       ? <div className="loader"></div>
-                      : "Submit"} */}
+                      : "Update"}
                   </button> 
                 </>
               )
