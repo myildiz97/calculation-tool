@@ -4,7 +4,7 @@ const Calculation = ({ register, errors, outputVars }) => {
     <>
       <h2 className="input-page-heading">Calculation Settings</h2>
       {
-        outputVars.every(o => o.length > 0) && outputVars.map((outputVar, index) => (
+        outputVars?.every(o => o.length > 0) && outputVars?.map((outputVar, index) => (
           <div className="form-inputs" key={outputVar + index}>
             <label htmlFor={`calc${index}`}>{outputVar}= </label>
             <input 

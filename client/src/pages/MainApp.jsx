@@ -108,7 +108,7 @@ const MainApp = () => {
               <div className="app-info">
                 <div className="app-info-header">
                   <h1>{lastPage?.title[index]}</h1>
-                  <h3>{lastPage?.description[index]}</h3>
+                  <h3 style={{fontWeight: "normal"}}>{lastPage?.description[index]}</h3>
                 </div>
                   { index !== lastPage.image.length - 1 ? (
                     <div className="app-info-inputs">
