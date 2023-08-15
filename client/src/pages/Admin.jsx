@@ -72,18 +72,19 @@ const Admin = () => {
       <h1 className="wrapper-heading">Admin Panel</h1>
       {user && <h2 className="wrapper-heading">Welcome {user.fullName}!</h2>}
       <hr className="page-hr"/>
-      <h3 style={{margin: "20px 0", color: "#fff"}}>Config new page</h3>
+      <h2 style={{margin: "20px 0", color: "#fff"}}>Config new page</h2>
       <div className="add-pages" style={{marginBottom: "20px"}}>
         <input 
           type="text"
           placeholder="Enter config name"
           onChange={(e) => setName(e.target.value)}
+          style={{width: "100%"}}
         />
         <IoMdAddCircleOutline className="new-page-btn" size="40" onClick={handleNewPage} />
       </div>
       {error && <p className="errors">{error}</p>}
       <hr className="page-hr"/>
-      <h3 style={{margin: "20px 0", color: "#fff"}}>Existing page settings</h3>
+      <h2 style={{margin: "20px 0", color: "#fff"}}>Existing page settings</h2>
       <div className="existing-pages">
         {
           pages?.length > 0 ? (

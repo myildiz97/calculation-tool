@@ -101,7 +101,7 @@ const MainApp = () => {
       <>
         {
           lastPage && lastPage?.image?.map((page, index) => (
-            <div key={index} style={{ display: index === currentPage ? "block" : "none", width: "100%" }}>
+            <div key={index} style={{ display: index === currentPage ? "flex" : "none", width: "100%" }} className="app-page-container">
               <div className="app-img">
                 <img src={baseUrlImg + lastPage?.image[index]} />
               </div>
