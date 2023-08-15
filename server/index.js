@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 
 app.use(cors({
-  origin: "https://calculation-tool-client.vercel.app/",
+  origin: "https://calculation-tool-client-myildiz97.vercel.app",
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: ["Content-Type", "Authorization"],
