@@ -11,7 +11,12 @@ const app = express();
 
 // Middleware
 
-app.use(cors());
+app.use(cors({
+  origin: "https://velvety-belekoy-bde7bb.netlify.app",
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

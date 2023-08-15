@@ -18,7 +18,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.use(cors());
+app.use(cors({
+  origin: "https://velvety-belekoy-bde7bb.netlify.app",
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 router.get("/", getProfile);
 
