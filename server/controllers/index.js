@@ -44,12 +44,13 @@ export const loginUser = async (req, res) => {
     const match = await comparePassword(password, user.password);
 
     if (match) {
-      jwt.sign({ email: user.email, id: user._id, fullName: user.fullName, role: user.role}, process.env.JWT_SECRET, {}, (err, token) => {
+      jwt.sign({ email: user.email, id: user._id, fullName: user.fullName, role: user.role}, 
+        process.env.JWT_SECRET, {}, (err, token) => {
         if (err) throw err;
-        res.cookie("token", token).json(user);
+        return res.cookie("token", token).json(user);
       });
     } else {
-      res.json({ error: "Email or password wrong!" });
+      return res.json({ error: "Email or password wrong!" });
     }
   } catch (error) {
     console.log(error);
@@ -63,12 +64,13 @@ export const logout = (req, res) => {
   try {
     const { token } = req.cookies;
 
+    // If token exist then delete it
     if (token) {
       invalidatedTokens.add(token);
       res.clearCookie("token");
-      res.json({ status: 200 });
+      return res.json({ status: 200 });
     } else {
-      res.status(400).json({ error: "No token found" });
+      return res.status(400).json({ error: "No token found" });
     };
   } catch (error) {
     console.error(error); 
@@ -83,10 +85,10 @@ export const getProfile = (req, res) => {
     if (token && !invalidatedTokens.has(token)) {
       jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
         if (err) throw err;
-        res.json(user);
+        return res.json(user);
       })
     } else {
-      res.json(null);
+      return res.json(null);
     };
   } catch (error) {
     console.error(error);
@@ -145,7 +147,7 @@ export const setConfig = async (req, res) => {
   }
 };
 
-export const getLastPages = async (req, res) => {
+export const getLastPage = async (req, res) => {
   try {
     const lastPage = await pagesModel.findOne({}, {}, { sort: { _id: -1 } });
 
@@ -168,7 +170,7 @@ export const getPages = async (req, res) => {
     console.error(error);
     return res.json({ error: "No pages to be found!"});
   }
-}
+};
 
 export const setResults = async (req, res) => {
   const results = {};
@@ -197,10 +199,10 @@ export const setResults = async (req, res) => {
       results[key] = result;
     };
     
-    res.status(200).json({ results });
+    return res.status(200).json({ results });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "Invalid expression or calculation error." });
+    return res.status(400).json({ error: "Invalid expression or calculation error." });
   }
 };
 
@@ -215,7 +217,7 @@ export const getPageById = async (req, res) => {
     return res.json({ page });
   } catch (error) {
     console.error(error);
-    return res.json({ error: "Page with id not obtained!"});
+    return res.json({ error: "Page with id not obtained!" });
   }
 };
 
@@ -223,7 +225,7 @@ export const updatePage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id) return res.json({ error: "Page ID is required!"});
+    if (!id) return res.json({ error: "Page ID is required!" });
 
     const { title, description, placeholder, variableName, outputName, outputValue, outputUnit, calculation } = req.body;
 
@@ -245,12 +247,30 @@ export const updatePage = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedPage)  return res.json({ error: "Page not updated!" });
+    if (!updatedPage)  return res.json({ error: "Page not found!" });
 
     return res.json({ updatedPage });
 
   } catch (error) {
     console.error(error);
     return res.json({ error: "Error updating page!" });
+  }
+};
+
+export const deletePage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) return res.json({ error: "Page ID is required!" });
+
+    const deletedPage = await pagesModel.findByIdAndDelete(id);
+
+    if (!deletedPage) return res.json({ error: "Page not found!" });
+
+    return res.json({ message: "Page deleted successfully!" });
+
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Error deleting page!" });
   }
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 
@@ -42,11 +43,29 @@ const Admin = () => {
     };
   };
 
-  const handleEditBtn = async (id) => navigate(`/admin/edit/${id}`);
+  const handleEditBtn = (id) => navigate(`/admin/edit/${id}`);
 
-  const handleDeleteBtn = (id) => {
-    console.log("delete: ", id);
+  const handleDeleteBtn = async (id) => {
+    setDeleteError(null);
+    const ans = window.confirm("Are you sure to delete the page?");
+    if (ans) {
+      try {
+        const { data } = await axios.delete(`/admin/delete/${id}`);
+        if (data?.message) {
+          toast.success("Page deleted successfully!");
+          setDeleteError(null);
+          navigate(0);
+        } else {
+          toast.error("Page not deleleted!");
+        };
+      } catch (error) {
+        console.error(error);
+        setDeleteError("Error deleting page!");
+      }
+    };
   };
+
+  const handleGetConfig = (id) => navigate(`/app/${id}`);
 
   return (
     <div className="wrapper">
@@ -67,12 +86,12 @@ const Admin = () => {
       <h3 style={{margin: "20px 0", color: "#fff"}}>Existing page settings</h3>
       <div className="existing-pages">
         {
-          pages ? (
+          pages?.length > 0 ? (
             <> {
               pages.map((page, index) => (
                 <div key={`ex-page-${index}`} style={{width: "100%"}}>
                   <div className="existing-page">
-                    <div className="ex-page-name">{page?.configName}</div>
+                    <div className="ex-page-name" onClick={() => handleGetConfig(page?._id)}>{page?.configName}</div>
                     <AiFillEdit className="ex-page-btn" size="50" color="#fff" onClick={() => handleEditBtn(page?._id)}/>
                     <AiFillDelete className="ex-page-btn" size="50" color="#fff" onClick={() => handleDeleteBtn(page?._id)}/>
                   </div>
@@ -82,7 +101,7 @@ const Admin = () => {
             } 
             </>
           ): (
-            <p>There is no page configuration yet...</p>
+            <p style={{color: "#e63946", fontSize: "1.1em", fontWeight: "bold"}}>There is no page configuration yet...</p>
           )
         }
       </div>

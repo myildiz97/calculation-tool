@@ -29,6 +29,7 @@ const App = () => {
           <Route path="admin/add/:configName" element={<NewPage />} />
           <Route path="admin/edit/:id" element={<EditPage />} />
           <Route path="app" element={<MainApp />} />
+          <Route path="app/:id" element={<MainApp />} />
         </Route>
       </Routes>
     </Router>

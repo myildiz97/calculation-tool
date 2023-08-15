@@ -1,7 +1,13 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const MainApp = () => {
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+
   const baseUrlImg = "http://localhost:5000";
   // const baseUrlImg = "https://calculation-tool.vercel.app";
 
@@ -11,22 +17,43 @@ const MainApp = () => {
   const [inputValues, setInputValues] = useState({});
   const [outputValues, setOutputValues] = useState({});
   const [outputVals, setOutputVals] = useState(null);
+  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    axios.get("/app")
+    axios.get("/")
+      .then(({ data }) => data?.role === "Admin" ? setAuth(data?.role) : navigate("/login"))
+      .catch((err) => console.log(err));
+
+    if (id) {
+      axios.get(`/app/${id}`)
       .then(({ data }) => {
-        setLastPage(data);
+        setLastPage(data?.page[0]);
         setVarNum((prevVarNum) => {
           let total = 0;
-          data.variableName.forEach((v) => {
+          data?.page[0]?.variableName?.forEach((v) => {
             total += v[0].split(",").length;
           });
           return total;
         });
-        setOutputVals(data?.outputValue);
+        setOutputVals(data?.page[0]?.outputValue);
       })
       .catch((err) => console.error(err));
-  }, []);
+    } else {
+      axios.get("/app")
+        .then(({ data }) => {
+          setLastPage(data);
+          setVarNum((prevVarNum) => {
+            let total = 0;
+            data?.variableName?.forEach((v) => {
+              total += v[0].split(",").length;
+            });
+            return total;
+          });
+          setOutputVals(data?.outputValue);
+        })
+        .catch((err) => console.error(err));
+    };
+  }, [id]);
 
   const handleNext = () => setCurrentPage(prevPage => prevPage + 1);
 
@@ -105,7 +132,7 @@ const MainApp = () => {
                             <p key={"outputname-" + i}>
                               <span>{lastPage?.outputName[i] + ": "}</span>
                               <span>{outputValues?.[lastPage?.outputValue?.[i]] ? outputValues?.[lastPage?.outputValue?.[i]] : "No calculation yet"}</span>
-                              <span> {outputValues[i] && lastPage?.outputUnit[i]}</span>
+                              <span> {lastPage?.outputUnit?.[i]}</span>
                             </p>
                           ))
                         }

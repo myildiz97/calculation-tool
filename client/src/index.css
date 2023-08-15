@@ -375,4 +375,5 @@ input[type='file'] {
   font-weight: bold;
   font-size: 1.2em;
   border-right: 2px solid rgba(255, 255, 255, .8);
+  cursor: pointer;
 }
