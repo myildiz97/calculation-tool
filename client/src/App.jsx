@@ -15,7 +15,7 @@ axios.defaults.withCredentials = true;
 
 const App = () => {
   return (
-    <Router>
+    <Router basename="/">
       <Toaster 
         position="bottom-center" 
         toastOptions={{ duration: 3000}} 
