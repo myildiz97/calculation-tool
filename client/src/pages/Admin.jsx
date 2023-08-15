@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import InputPage from "../components/InputPage.jsx";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 const Admin = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({});
-  const [inputPageNumber, setInputPageNumber] = useState([]);
-  const [numberOfPages, setNumberOfPages] = useState(null);
-  const [numberError, setNumberError] = useState(null);
+  const [name, setName] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get("/")
@@ -17,32 +16,37 @@ const Admin = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  const handleNewPage = async () => {
+    if (name) {
+      try {
+        const { data } = await axios.get(`/admin?configName=${name}`);
+        const { configName, error } = data;
+        if (error) setError(error);
+        if (configName) {
+          setError(null);
+          navigate(`/admin/add/${configName}`);
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  };
+
   return (
     <div className="wrapper">
       <h1 className="wrapper-heading">Admin Panel</h1>
       {user && <h2 className="wrapper-heading">Welcome {user.fullName}!</h2>}
-      {
-        inputPageNumber.length < 1 ? (
-          <div className="form-inputNums">
-            <label htmlFor="inputPageNumber">Enter the number of input pages: </label>
-            <div>
-              <input type="number" id="inputPageNumber" placeholder="2" min="0" onChange={(e) => setNumberOfPages(parseInt(e.target.value) + 1)} />
-              <button onClick={() => {
-                if (!numberOfPages) setNumberError("Page number must be entered!");
-                if (numberOfPages < 2) {
-                  setNumberError("Page number must be positive!");
-                } else {
-                  const array = Array.from({ length: numberOfPages }, (_, index) => index.toString());
-                  setInputPageNumber(array);
-                }
-            }}>Set Pages</button>
-            </div>
-            {numberError && <p className="errors">{numberError}</p>}
-          </div>
-        ) : (
-          <InputPage inputPageNumber={inputPageNumber} />
-        )
-      }
+      <hr className="page-hr"/>
+      <div className="add-pages">
+        <input 
+          type="text"
+          placeholder="Enter config name"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <IoMdAddCircleOutline className="new-page-btn" size="40" onClick={handleNewPage} />
+      </div>
+      <hr className="page-hr"/>
+      {error && <p className="errors">{error}</p>}
     </div>
   );
 };

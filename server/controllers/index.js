@@ -82,10 +82,26 @@ export const getProfile = (req, res) => {
   };
 };
 
+export const getConfigName = async (req, res) => {
+  try {
+    const { configName } = req.query;
+    if (!configName) return res.json({ error: "Config name is required!"});
+
+    // Check if config name is already given in both cases of lowercase and uppercase
+    const exist = await pagesModel.findOne({ configName: { $regex: new RegExp(`^${configName}$`, "i") }, });
+    if (exist) return res.json({ error: "The config name is already given to another page setting!"});
+    
+    return res.json({ configName });
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Config name could not obtained!"})
+  }
+};
+
 export const setConfig = async (req, res) => {
   try {
     
-    const { title, description, placeholder, variableName,
+    const { configName, title, description, placeholder, variableName,
       outputName, outputValue, outputUnit, calculation } = req.body;
       
     const fileUrls = req.files.map(file => `/uploads/${file.filename}`);
@@ -99,11 +115,11 @@ export const setConfig = async (req, res) => {
     if (!outputValue) return res.json({ error: "Output value required!" });
     if (!outputUnit) return res.json({ error: "Output unit required!" });
     if (!calculation) return res.json({ error: "Calculation setting required!" });
+    if (!configName) return res.json({ error: "Config name required!" });
   
-
     // Create pages in database
     const pages = await pagesModel.create({ 
-      image: fileUrls, title, description, placeholder, variableName, 
+      configName, image: fileUrls, title, description, placeholder, variableName, 
       outputName, outputValue, outputUnit, calculation 
     });
     

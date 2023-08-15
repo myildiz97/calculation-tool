@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const pagesSchema = new mongoose.Schema({
+  configName: String,
   image: [ { type: String }, ],
   title: [ { type: String }, ],
   description: [ { type: String }, ],

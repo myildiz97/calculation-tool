@@ -306,3 +306,38 @@ input[type='file'] {
 .app-info-output p span:first-of-type {
   font-weight: bold;
 }
+
+.add-pages {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.add-pages input {
+  padding-left: 20px;
+  border-radius: 5px;
+  border: none;
+}
+
+.new-page-btn {
+  margin: 0;
+  background: none;
+  width: fit-content;
+  color: #e63946;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.new-page-btn:hover {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.new-page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding-top: 20px;
+}

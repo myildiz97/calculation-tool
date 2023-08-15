@@ -1,4 +1,4 @@
-# calculation-tool
+# Calculation Tool
  Calculation Tool Case Full Stack - MERN
 
 ## Start Server

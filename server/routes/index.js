@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
-import { registerUser, loginUser, getProfile, logout, setConfig, getLastPages, setResults} from "../controllers/index.js";
+import { registerUser, loginUser, getProfile, logout, setConfig, 
+  getLastPages, setResults, getConfigName} from "../controllers/index.js";
 
 const router = express.Router();
 
@@ -22,6 +23,8 @@ router.post("/logout", logout);
 router.post("/login", loginUser);
 
 router.post("/register", registerUser);
+
+router.get("/admin", getConfigName);
 
 router.post("/admin", upload.array("image", 100), setConfig);
 
