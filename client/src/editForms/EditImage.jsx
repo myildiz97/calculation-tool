@@ -11,7 +11,7 @@ const EditImage = ( { register, errors, image, index }) => {
   };
 
   // const baseUrlImg = "http://localhost:5000";
-  const baseUrlImg = "https://calculation-tool-api.onrender.com";
+  const baseUrlImg = "https://calculation-tool-api.vercel.app";
 
   return (
     <div className="form-inputs">
