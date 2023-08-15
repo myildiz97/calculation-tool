@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.use(cors({
-  origin: "https://calculation-tool-client-jj9aggjd1-myildiz97.vercel.app",
+  origin: "https://calculation-tool-client-git-main-myildiz97.vercel.app",
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: ["Content-Type", "Authorization"],
