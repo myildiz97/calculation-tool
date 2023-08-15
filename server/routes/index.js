@@ -1,6 +1,5 @@
 import express from "express";
 import multer from "multer";
-import cors from "cors";
 import { registerUser, loginUser, getProfile, logout, setConfig, 
   setResults, getConfigName, getPages, getPageById , getLastPage,
   updatePage, deletePage } from "../controllers/index.js";
@@ -17,13 +16,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-router.use(cors({
-  origin: "https://calculation-tool-client-git-main-myildiz97.vercel.app",
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
 
 router.get("/", getProfile);
 
