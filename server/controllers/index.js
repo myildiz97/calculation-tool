@@ -1,5 +1,6 @@
 import userModel from "../models/user.js";
 import pagesModel from "../models/pages.js";
+import customerModel from "../models/customer.js";
 import { hashPassword, comparePassword } from "../helpers/index.js";
 import jwt from "jsonwebtoken";
 import * as math from 'mathjs';
@@ -217,7 +218,7 @@ export const getPageById = async (req, res) => {
     return res.json({ page });
   } catch (error) {
     console.error(error);
-    return res.json({ error: "Page with id not obtained!" });
+    return res.json({ error: "Page with the given id is not obtained!" });
   }
 };
 
@@ -272,5 +273,42 @@ export const deletePage = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.json({ error: "Error deleting page!" });
+  }
+};
+
+export const getCustomer = async (req, res) => {
+  try {
+    const customers = await customerModel.find({});
+
+    if (!customers) return res.json({ error: "Customers not found!" });
+
+    return res.json(customers);
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Error getting customers!"});
+  }
+};
+
+export const setCustomer = async (req, res) => {
+  try {
+    const { name, surname, phone } = req.body;
+
+    // Check if name was entered
+    if (!name) return res.json({ error: "Name is required!" });
+
+    // Check if surname was entered
+    if (!surname) return res.json({ error: "Surname is required!" });
+
+    // Check if phone was entered
+    if (!phone) return res.json({ error: "Phone number is required!" });
+
+    // Create customer in database
+    const customer = await customerModel.create({ name, surname, phone });
+
+    return res.json(customer);
+
+  } catch (error) {
+    console.error(error);
+    return res.json({ error: "Customer not created!"});
   }
 };

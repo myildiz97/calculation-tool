@@ -5,6 +5,9 @@ import Admin from "./pages/Admin";
 import MainApp from "./pages/MainApp";
 import NewPage from "./pages/NewPage";
 import EditPage from "./pages/EditPage";
+import Apps from "./pages/Apps";
+import AppsDetail from "./pages/AppsDetail";
+import Customers from "./pages/Customers";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import MainLayout from "./layouts/MainLayout";
@@ -29,6 +32,9 @@ const App = () => {
           <Route path="admin/edit/:id" element={<EditPage />} />
           <Route path="app" element={<MainApp />} />
           <Route path="app/:id" element={<MainApp />} />
+          <Route path="apps" element={<Apps />} />
+          <Route path="apps/:id" element={<AppsDetail />} />
+          <Route path="customers" element={<Customers />} />
         </Route>
       </Routes>
     </Router>

@@ -89,7 +89,7 @@ const Admin = () => {
         {
           pages?.length > 0 ? (
             <> {
-              pages.map((page, index) => (
+              pages?.map((page, index) => (
                 <div key={`ex-page-${index}`} style={{width: "100%"}}>
                   <div className="existing-page">
                     <div className="ex-page-name" onClick={() => handleGetConfig(page?._id)}>{page?.configName}</div>

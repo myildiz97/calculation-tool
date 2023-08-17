@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { registerUser, loginUser, getProfile, logout, setConfig, 
   setResults, getConfigName, getPages, getPageById , getLastPage,
-  updatePage, deletePage } from "../controllers/index.js";
+  updatePage, deletePage, setCustomer, getCustomer } from "../controllers/index.js";
 
 const router = express.Router();
 
@@ -42,5 +42,11 @@ router.post("/calculation", setResults);
 router.get("/app", getLastPage);
 
 router.get("/app/:id", getPageById);
+
+router.get("/apps/:id", getPageById);
+
+router.get("/customers", getCustomer);
+
+router.post("/customers", setCustomer);
 
 export default router;

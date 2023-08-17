@@ -26,6 +26,18 @@ const Header = () => {
     fontSize: "1.25em"
   };
 
+  const activeStyleApp = {
+    textDecoration: "underline",
+    color: "#32c4ee",
+    fontSize: "1.25em"
+  };
+
+  const activeStyleCustomers = {
+    textDecoration: "underline",
+    color: "#48cae4",
+    fontSize: "1.25em"
+  };
+
   const handleLogout = async () => {
     try {
       const response = await axios.post("/logout");
@@ -43,6 +55,12 @@ const Header = () => {
   return (
     <header>
       <nav>
+        <NavLink
+          to="/apps"
+          style={({isActive}) => isActive ? activeStyleApp : null}
+          >
+          Apps
+        </NavLink>
         {!user ? (
           <>
             <NavLink
@@ -67,6 +85,14 @@ const Header = () => {
             >
               Admin
             </NavLink>
+
+            <NavLink
+              to="/customers"
+              style={({isActive}) => isActive ? activeStyleCustomers : null}
+            >
+              Customers
+            </NavLink>
+
             <Link onClick={handleLogout}>Logout</Link>
           </>
         )}

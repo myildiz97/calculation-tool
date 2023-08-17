@@ -1,31 +1,26 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import DropInfo from "../forms/DropInfo.jsx";
 
-const MainApp = () => {
+const AppsDetail = () => {
   const navigate = useNavigate();
 
   const { id } = useParams();
 
   const baseUrlImg = "http://localhost:5000";
 
-  const [lastPage, setLastPage] = useState(null);
+  const [configPage, setConfigPage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [varNum, setVarNum] = useState(null);
   const [inputValues, setInputValues] = useState({});
   const [outputValues, setOutputValues] = useState({});
   const [outputVals, setOutputVals] = useState(null);
-  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
-    axios.get("/")
-      .then(({ data }) => data?.role === "Admin" ? setAuth(data?.role) : navigate("/login"))
-      .catch((err) => console.log(err));
-
-    if (id) {
-      axios.get(`/app/${id}`)
+    axios.get(`/apps/${id}`)
       .then(({ data }) => {
-        setLastPage(data?.page[0]);
+        setConfigPage(data?.page[0]);
         setVarNum((prevVarNum) => {
           let total = 0;
           data?.page[0]?.variableName?.forEach((v) => {
@@ -36,21 +31,6 @@ const MainApp = () => {
         setOutputVals(data?.page[0]?.outputValue);
       })
       .catch((err) => console.error(err));
-    } else {
-      axios.get("/app")
-        .then(({ data }) => {
-          setLastPage(data);
-          setVarNum((prevVarNum) => {
-            let total = 0;
-            data?.variableName?.forEach((v) => {
-              total += v[0].split(",").length;
-            });
-            return total;
-          });
-          setOutputVals(data?.outputValue);
-        })
-        .catch((err) => console.error(err));
-    };
   }, [id]);
 
   const handleNext = () => setCurrentPage(prevPage => prevPage + 1);
@@ -63,7 +43,7 @@ const MainApp = () => {
       [name]: value,
     }));
   }, []);
-  
+
   const replaceVariables = (expression) => {
     const variables = Object.keys(inputValues);
 
@@ -78,7 +58,7 @@ const MainApp = () => {
   };
 
   const objLen = Object.keys(inputValues).length;
-  const expressions = useMemo(() => lastPage && [...lastPage?.calculation], [lastPage]);
+  const expressions = useMemo(() => configPage && [...configPage?.calculation], [configPage]);
   const trigger = useMemo(() => expressions && objLen === varNum, [expressions, inputValues, varNum]);
   const btnTrigger = useMemo(() => objLen < 1);
 
@@ -92,44 +72,45 @@ const MainApp = () => {
     };
   }, [trigger]);
 
+
   return (
-    <div className="app-wrapper">
-      {lastPage?.error && <p>No page configured yet...</p>}
-      <>
+    <div className="apps-wrapper-outer">
+      {configPage?.error && <p>{configPage?.error}</p>}
+      <div className="apps-wrapper-inner">
         {
-          lastPage && lastPage?.image?.map((page, index) => (
-            <div key={index} style={{ display: index === currentPage ? "flex" : "none", width: "100%" }} className="app-page-container">
-              <div className="app-img">
-                <img src={baseUrlImg + lastPage?.image[index]} />
+          configPage && configPage?.image?.map((page, index) => (
+            <div key={"apps-inner-" + index} style={{ display: index === currentPage ? "flex" : "none", width: "100%" }} className="apps-img-detail">
+              <div className="apps-img">
+                <img src={baseUrlImg + configPage?.image[index]} />
               </div>
-              <div className="app-info">
-                <div className="app-info-header">
-                  <h1>{lastPage?.title[index]}</h1>
-                  <h3 style={{fontWeight: "normal"}}>{lastPage?.description[index]}</h3>
+              <div className="apps-info" style={{color: "#fff"}}>
+                <div className="apps-info-header">
+                  <h1>{configPage?.title[index]}</h1>
+                  <h3 style={{fontWeight: "normal"}}>{configPage?.description[index]}</h3>
                 </div>
-                  { index !== lastPage.image.length - 1 ? (
-                    <div className="app-info-inputs">
+                  { index !== configPage.image.length - 1 ? (
+                    <div className="apps-info-inputs">
                       {
-                        lastPage?.variableName[index][0].split(",").map((name, i) => (
+                        configPage?.variableName[index][0].split(",").map((name, i) => (
                           <input
-                            key={`${name}-${i}`}
+                            key={`apps-${name}-${i}`}
                             type="number"
                             min={0}
                             id={name}
-                            placeholder={lastPage?.placeholder[index][0].split(",")[i]}
+                            placeholder={configPage?.placeholder[index][0].split(",")[i]}
                             onChange={e => handleChange(name, e.target.value)}
                           />
                         ))
                       }
                     </div>
                     ): (
-                      <div className="app-info-output">
+                      <div className="apps-info-output">
                         {
-                          lastPage?.outputValue.map((value, i) => (
-                            <p key={"outputname-" + i}>
-                              <span>{lastPage?.outputName[i] + ": "}</span>
-                              <span>{outputValues?.[lastPage?.outputValue?.[i]] ? outputValues?.[lastPage?.outputValue?.[i]] : "No calculation yet"}</span>
-                              <span> {lastPage?.outputUnit?.[i]}</span>
+                          configPage?.outputValue.map((value, i) => (
+                            <p key={"apps-outputname-" + i}>
+                              <span>{configPage?.outputName[i] + ": "}</span>
+                              <span>{outputValues?.[configPage?.outputValue?.[i]] ? outputValues?.[configPage?.outputValue?.[i]] : "No calculation yet"}</span>
+                              <span> {configPage?.outputUnit?.[i]}</span>
                             </p>
                           ))
                         }
@@ -140,13 +121,13 @@ const MainApp = () => {
             </div>
           ))
         }
-        <div className="next-back-btn">
+        <div className="next-back-btn" style={{marginTop: "20px"}}>
           {currentPage !== 0 && 
             <button 
-              style={currentPage === lastPage?.image?.length - 1 ? {marginRight: "auto", marginLeft: "0"} : null} 
+              style={currentPage === configPage?.image?.length - 1 ? {marginRight: "auto", marginLeft: "0"} : null} 
               onClick={handlePrev}
             >Back</button>}
-          {currentPage !== lastPage?.image?.length - 1 && 
+          {currentPage !== configPage?.image?.length - 1 && 
             <button 
               onClick={handleNext}
               disabled={btnTrigger}
@@ -154,9 +135,14 @@ const MainApp = () => {
             >
               Forward</button>}
         </div>
-      </>
+        {
+          currentPage === configPage?.image?.length - 1 &&
+          <DropInfo configName={configPage?.configName} />
+        }
+      </div>
     </div>
+
   );
 };
 
-export default MainApp;
+export default AppsDetail;
