@@ -82,7 +82,7 @@ const MainApp = () => {
   const trigger = useMemo(() => expressions && objLen === varNum, [expressions, inputValues, varNum]);
   const btnTrigger = useMemo(() => objLen < 1);
 
-  useEffect(() => {
+  const handleSubmit = () => {
     if (trigger) {
       const expressionsArr = [...expressions];
       const newExpressionsArr = expressionsArr.map((e) => replaceVariables(e));
@@ -90,7 +90,8 @@ const MainApp = () => {
         .then(({ data }) => setOutputValues(data?.results))
         .catch(error => console.error('Error calculating:', error));
     };
-  }, [trigger]);
+    handleNext();
+  };
 
   return (
     <div className="app-wrapper">
@@ -148,7 +149,7 @@ const MainApp = () => {
             >Back</button>}
           {currentPage !== lastPage?.image?.length - 1 && 
             <button 
-              onClick={handleNext}
+              onClick={currentPage === lastPage?.image?.length - 2 ? handleSubmit : handleNext}
               disabled={btnTrigger}
               style={{cursor: btnTrigger ? "not-allowed" : "pointer"}}
             >

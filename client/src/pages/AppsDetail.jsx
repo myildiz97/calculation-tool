@@ -1,11 +1,9 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import DropInfo from "../forms/DropInfo.jsx";
 
 const AppsDetail = () => {
-  const navigate = useNavigate();
-
   const { id } = useParams();
 
   const baseUrlImg = "http://localhost:5000";
@@ -62,7 +60,7 @@ const AppsDetail = () => {
   const trigger = useMemo(() => expressions && objLen === varNum, [expressions, inputValues, varNum]);
   const btnTrigger = useMemo(() => objLen < 1);
 
-  useEffect(() => {
+  const handleSubmit = () => {
     if (trigger) {
       const expressionsArr = [...expressions];
       const newExpressionsArr = expressionsArr.map((e) => replaceVariables(e));
@@ -70,8 +68,8 @@ const AppsDetail = () => {
         .then(({ data }) => setOutputValues(data?.results))
         .catch(error => console.error('Error calculating:', error));
     };
-  }, [trigger]);
-
+    handleNext();
+  };
 
   return (
     <div className="apps-wrapper-outer">
@@ -129,7 +127,7 @@ const AppsDetail = () => {
             >Back</button>}
           {currentPage !== configPage?.image?.length - 1 && 
             <button 
-              onClick={handleNext}
+              onClick={currentPage === configPage?.image?.length - 2 ? handleSubmit : handleNext}
               disabled={btnTrigger}
               style={{cursor: btnTrigger ? "not-allowed" : "pointer"}}
             >
@@ -141,7 +139,6 @@ const AppsDetail = () => {
         }
       </div>
     </div>
-
   );
 };
 
