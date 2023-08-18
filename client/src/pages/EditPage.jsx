@@ -1,15 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import EditPageComp from "../components/EditPageComp.jsx";
 
 const EditPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const [page, setPage] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    axios.get("/")
+      .then(({ data }) => {
+        console.log(data);
+        (!data || data?.role !== "Admin") && navigate("/login");
+      })
+      .catch((err) => console.log(err));
+
     axios.get(`/pages/${id}`)
       .then(({ data }) => {
         if (data?.page) {

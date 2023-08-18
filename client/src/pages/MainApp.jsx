@@ -15,11 +15,10 @@ const MainApp = () => {
   const [inputValues, setInputValues] = useState({});
   const [outputValues, setOutputValues] = useState({});
   const [outputVals, setOutputVals] = useState(null);
-  const [auth, setAuth] = useState(false);
 
   useEffect(() => {
     axios.get("/")
-      .then(({ data }) => data?.role === "Admin" ? setAuth(data?.role) : navigate("/login"))
+      .then(({ data }) => (!data && data?.role !== "Admin") && navigate("/login"))
       .catch((err) => console.log(err));
 
     if (id) {

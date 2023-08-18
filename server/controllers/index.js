@@ -260,15 +260,23 @@ export const updatePage = async (req, res) => {
 
 export const deletePage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { token } = req.cookies;
 
-    if (!id) return res.json({ error: "Page ID is required!" });
+    console.log(token);
 
-    const deletedPage = await pagesModel.findByIdAndDelete(id);
+    if (token) {
+      const { id } = req.params;
 
-    if (!deletedPage) return res.json({ error: "Page not found!" });
+      if (!id) return res.json({ error: "Page ID is required!" });
 
-    return res.json({ message: "Page deleted successfully!" });
+      const deletedPage = await pagesModel.findByIdAndDelete(id);
+
+      if (!deletedPage) return res.json({ error: "Page not found!" });
+
+      return res.json({ message: "Page deleted successfully!" });
+    } else {
+      return res.json({ error: "User access denied!"});
+    };
 
   } catch (error) {
     console.error(error);

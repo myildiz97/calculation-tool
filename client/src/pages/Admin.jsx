@@ -56,7 +56,7 @@ const Admin = () => {
           setDeleteError(null);
           navigate(0);
         } else {
-          toast.error("Page not deleleted!");
+          toast.error("Page not deleted!");
         };
       } catch (error) {
         console.error(error);
