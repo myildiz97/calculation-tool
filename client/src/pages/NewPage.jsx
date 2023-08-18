@@ -11,10 +11,11 @@ const NewPage = () => {
   const [inputPageNumber, setInputPageNumber] = useState([]);
   const [numberOfPages, setNumberOfPages] = useState(null);
   const [numberError, setNumberError] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     axios.get("/")
-      .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
+      .then(({ data }) => (!data || data?.role !== "Admin") ? navigate("/login") : setUser(data))
       .catch((err) => console.log(err)); 
   }, []);
 
@@ -39,7 +40,7 @@ const NewPage = () => {
             {numberError && <p className="errors">{numberError}</p>}
           </div>
         ) : (
-          <InputPage inputPageNumber={inputPageNumber} configName={configName} />
+          <InputPage inputPageNumber={inputPageNumber} configName={configName} admin={user?.id} />
           )
         }
     </div>

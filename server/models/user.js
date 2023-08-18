@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
     enum: USER_ROLES,
     default: USER_ROLES[1],
   },
+}, {
+  timestamps: true,
 });
 
 const userModel = mongoose.model("User", userSchema);

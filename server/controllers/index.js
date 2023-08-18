@@ -117,7 +117,7 @@ export const setConfig = async (req, res) => {
   try {
     
     const { configName, title, description, placeholder, variableName,
-      outputName, outputValue, outputUnit, calculation } = req.body;
+      outputName, outputValue, outputUnit, calculation, admin } = req.body;
       
     const fileUrls = req.files.map(file => `/uploads/${file.filename}`);
 
@@ -131,11 +131,12 @@ export const setConfig = async (req, res) => {
     if (!outputUnit) return res.json({ error: "Output unit required!" });
     if (!calculation) return res.json({ error: "Calculation setting required!" });
     if (!configName) return res.json({ error: "Config name required!" });
+    if (!admin) return res.json({ error: "Admin id is required!"});
   
     // Create pages in database
     const pages = await pagesModel.create({ 
       configName, image: fileUrls, title, description, placeholder, variableName, 
-      outputName, outputValue, outputUnit, calculation 
+      outputName, outputValue, outputUnit, calculation, admin
     });
     
     if (!pages) return res.json({ error: "No page created" });

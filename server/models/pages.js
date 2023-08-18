@@ -11,6 +11,9 @@ const pagesSchema = new mongoose.Schema({
   outputValue: [ { type: String }, ],
   outputUnit: [ { type: String }, ],
   calculation: [ { type: String }, ],
+  admin: String,
+}, {
+  timestamps: true,
 });
 
 const pagesModel = mongoose.model("Pages", pagesSchema);

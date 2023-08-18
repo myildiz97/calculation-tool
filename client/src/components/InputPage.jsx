@@ -51,7 +51,7 @@ const schema = z.object({
     .nonempty("Calculation setting is required!")),
 });
 
-const InputPage = ({ inputPageNumber, configName }) => {
+const InputPage = ({ inputPageNumber, configName, admin }) => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -96,6 +96,7 @@ const InputPage = ({ inputPageNumber, configName }) => {
     }
 
     formData.append("configName", configName);
+    formData.append("admin", admin);
     
     try {
       const { data } = await axios.post("/admin", formData);

@@ -15,18 +15,29 @@ const Admin = () => {
   const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
+    let userId = "";
     axios.get("/")
-      .then(({ data }) => data?.role === "Admin" ? setUser(data) : navigate("/login"))
+      .then(({ data }) => {
+        if (data?.role === "Admin") {
+          setUser(data);
+          userId = data?.id;
+        } else {
+          navigate("/login");
+        }})
       .catch((err) => console.log(err));
 
     axios.get("/pages")
-      .then(({ data }) => setPages(data))
+      .then(({ data }) => {
+        let filtered = data?.filter(page => page?.admin && page?.admin === userId);
+        setPages(filtered);
+        // setPages(data);
+      })
       .catch((err) => console.log(err));
   }, []);
 
   const handleNewPage = async () => {
     setError(null);
-    if (name) {
+    if (name && user?.id) {
       try {
         const { data } = await axios.get(`/admin?configName=${name}`);
         const { configName, error } = data;
@@ -70,7 +81,7 @@ const Admin = () => {
   return (
     <div className="wrapper">
       <h1 className="wrapper-heading">Admin Panel</h1>
-      {user && <h2 className="wrapper-heading">Welcome {user.fullName}!</h2>}
+      {user && <h2 className="wrapper-heading">Welcome {user?.fullName}!</h2>}
       <hr className="page-hr"/>
       <h2 style={{margin: "20px 0", color: "#fff"}}>Config new page</h2>
       <div className="add-pages" style={{marginBottom: "20px"}}>
@@ -84,7 +95,7 @@ const Admin = () => {
       </div>
       {error && <p className="errors">{error}</p>}
       <hr className="page-hr"/>
-      <h2 style={{margin: "20px 0", color: "#fff"}}>Existing page settings</h2>
+      <h2 style={{margin: "20px 0", color: "#fff"}}>Existing page settings of <span style={{color: "red"}}>{user?.fullName}</span></h2>
       <div className="existing-pages">
         {
           pages?.length > 0 ? (
