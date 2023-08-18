@@ -18,7 +18,7 @@ const MainApp = () => {
 
   useEffect(() => {
     axios.get("/")
-      .then(({ data }) => (!data && data?.role !== "Admin") && navigate("/login"))
+      .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
       .catch((err) => console.log(err));
 
     if (id) {

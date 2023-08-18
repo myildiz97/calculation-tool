@@ -1,13 +1,22 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import InputPage from "../components/InputPage.jsx";
+import axios from "axios";
 
 const NewPage = () => {
+  const navigate = useNavigate();
+  
   const { configName } = useParams();
   
   const [inputPageNumber, setInputPageNumber] = useState([]);
   const [numberOfPages, setNumberOfPages] = useState(null);
   const [numberError, setNumberError] = useState(null);
+
+  useEffect(() => {
+    axios.get("/")
+      .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
+      .catch((err) => console.log(err)); 
+  }, []);
 
   return (
     <div className="new-page">
