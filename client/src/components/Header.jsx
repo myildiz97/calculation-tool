@@ -9,8 +9,8 @@ const Header = () => {
   const [user, setUser] = useState(null);
   
   useEffect(() => {
-    axios.get("/")
-      .then(({ data }) => setUser(data))
+    axios.get("/api/users/currentuser/")
+      .then(({ data }) => !data?.error && setUser(data))
       .catch((err) => console.log(err));
   }, [location.pathname]);
 
@@ -40,7 +40,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("/logout");
+      const response = await axios.post("/api/users/logout/");
       if (response.status === 200) {
         navigate("/login");
         navigate(0);

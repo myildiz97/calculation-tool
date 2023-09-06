@@ -16,7 +16,7 @@ const Admin = () => {
 
   useEffect(() => {
     let userId = "";
-    axios.get("/")
+    axios.get("/api/users/currentuser/")
       .then(({ data }) => {
         if (data?.role === "Admin") {
           setUser(data);
@@ -26,11 +26,11 @@ const Admin = () => {
         }})
       .catch((err) => console.log(err));
 
-    axios.get("/pages")
+    axios.get("/api/pages/")
       .then(({ data }) => {
         let filtered = data?.filter(page => page?.admin && page?.admin === userId);
         setPages(filtered);
-        // setPages(data);
+        // setPages(data)
       })
       .catch((err) => console.log(err));
   }, []);
@@ -39,9 +39,10 @@ const Admin = () => {
     setError(null);
     if (name && user?.id) {
       try {
-        const { data } = await axios.get(`/admin?configName=${name}`);
-        const { configName, error } = data;
-        if (error) setError(error);
+        const { data } = await axios.get(`/api/pages/page/?configName=${name}`);
+        const { configName, error, serialized_page } = data;
+        console.log(configName, error, serialized_page)
+        if (error || serialized_page) setError(error || serialized_page?.error);
         if (configName) {
           setError(null);
           navigate(`/admin/add/${configName}`);

@@ -34,8 +34,7 @@ const Register = () => {
   const onSubmit = async ({ fullName, email, password, role }) => {
     setIsLoading(true);
     try {
-      const { data } = await axios.post("/register", { fullName, email, password, role });
-
+      const { data } = await axios.post("/api/users/create/", { fullName, email, password, role });
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);

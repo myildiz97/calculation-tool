@@ -23,8 +23,10 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    axios.get("/")
-      .then(({ data }) => data?.role === USER_ROLES[1] && navigate("/admin"))
+    axios.get("/api/users/currentuser/")
+      .then(({ data }) => {
+        data?.role === USER_ROLES[1] && navigate("/admin")
+      })
       .catch((err) => console.error(err));
   }, [])
 
@@ -35,7 +37,7 @@ const Login = () => {
   const onSubmit = async ({ email, password }) => {
     setIsLoading(true);
     try {
-      const { data } = await axios.post("/login", { email, password });
+      const { data } = await axios.post("/api/users/login/", { email, password });
       if (data.error) {
         toast.error(data?.error);
         setIsLoading(false);
@@ -43,6 +45,7 @@ const Login = () => {
         toast.success("Login is successfull!");
         data?.role === USER_ROLES[1] ? navigate("/admin") : setTimeout(() => navigate(0), 2000);
       };
+
     } catch (error) {
       setIsLoading(false);
       console.error(error);

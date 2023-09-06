@@ -104,7 +104,7 @@ export const getConfigName = async (req, res) => {
 
     // Check if config name is already given in both cases of lowercase and uppercase
     const exist = await pagesModel.findOne({ configName: { $regex: new RegExp(`^${configName}$`, "i") }, });
-    if (exist) return res.json({ error: "The config name is already given to another page setting!"});
+    if (exist) return res.json({ error: "The config name is already given to another page setting!" });
     
     return res.json({ configName });
   } catch (error) {
