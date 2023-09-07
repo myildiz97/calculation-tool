@@ -108,14 +108,14 @@ class LogoutUserView(APIView):
         return response
     
 # Page Views
-    
+
 class PagesView(APIView):
     def get(self, request):
         try:
             client = connect_to_mongodb()
-            page_model = Page(client['test'])
+            page_model = Page(client['tool'])
             if client:
-                pages = client['test']['pages'].find()
+                pages = client['tool']['pages'].find()
                 if pages is None:
                     return Response({ "error": "No pages found" })
                 serialized_pages = [page_model.to_dict(page) for page in pages]
@@ -128,13 +128,14 @@ class PageView(APIView):
     def get(self, request):
         try:
             client = connect_to_mongodb()
-            page_model = Page(client['test'])
+            page_model = Page(client['tool'])
             if client:
                 config_name = request.GET.get('configName', None)
                 if config_name is None:
                     return Response({ "error": "No config name provided" })
                 else:  
-                    page = client['test']['pages'].find_one({ "configName": config_name })
+                    page = client['tool']['pages'].find_one({ "configName": config_name })
+                    #page = page_model.get({ "configName": config_name }, where="configName")
                     if page is None:
                         return Response({ "configName": config_name })
                     serialized_page = page_model.to_dict(page)
@@ -146,28 +147,26 @@ class PageView(APIView):
 class CreatePageView(APIView):
     def post(self, request):
         try:
-            # if 'image' not in request.FILES:
-            #     return Response({ "error": "'image' not found in request.FILES" })
-
-            for i in request.FILES:
-                print(request.FILES[i])
-                fs = FileSystemStorage()
-                filename = fs.save(request.FILES[i].name, request.FILES[i])
-                uploaded_file_url = fs.url(filename)
-                print(uploaded_file_url)
-                print(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'client/dist', uploaded_file_url))
-                # return Response({ "success": "Page created" })
-
             client = connect_to_mongodb()
-            page_model = Page(client['test'])
+            page_model = Page(client['tool'])
             if client:
                 page_data = page_model.from_dict(request.data)
-                #print(request.FILES['image'])
+                image_files = request.FILES.getlist('image')
+                image_files_array = []
+                if image_files:
+                    for image_file in image_files:
+                        fs = FileSystemStorage()
+                        filename = fs.save(image_file.name, image_file)
+                        uploaded_file_url = fs.url(filename)
+                        image_files_array.append(uploaded_file_url)
+                    page_data['image'] = image_files_array
+                #print("page_data", page_data)
                 is_created, error = page_model.create(page_data)
-                if is_created:  
+                if is_created:
                     return Response({ "success": "Page created" })
                 else:
                     return Response({ "error": error })
         except Exception as e:
             print(f"Error:", e)
             return Response({ "error": "Failed to connect to MongoDB" })
+        

@@ -71,6 +71,8 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
   });
 
   const onSubmit = async (data) => {
+    console.log(data)
+    //return;
     setIsLoading(true);
 
     const { image, title, description, placeholder, variableName, 
@@ -100,8 +102,12 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
     formData.append("admin", admin);
     
     try {
-      const { data } = await axios.post("/api/pages/create/", formData);
-
+      const { data } = await axios.post("/api/pages/create/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("data", data);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
