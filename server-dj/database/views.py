@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from .models import *
-from .serializer import *
 from rest_framework.response import Response
 from .dbconnect import connect_to_mongodb
 import bcrypt
@@ -8,14 +7,18 @@ import jwt
 from calctool import settings
 import datetime
 from bson.objectid import ObjectId
+from django.core.files.storage import FileSystemStorage
+import os
+
+# User Views
 
 class UsersView(APIView):
     def get(self, request):
         try:
             client = connect_to_mongodb()
-            user_model = User(client['test'])
+            user_model = User(client['tool'])
             if client:
-                users = client['test']['users'].find()
+                users = client['tool']['users'].find()
                 serialized_users = [user_model.to_dict(user) for user in users]
                 return Response(serialized_users)
         except Exception as e:
@@ -26,10 +29,11 @@ class CreateUserView(APIView):
     def post(self, request):
         try:
             client = connect_to_mongodb()
-            user_model = User(client['test'])
+            user_model = User(client['tool'])
             if client:
                 user_data = user_model.from_dict(request.data)
                 is_created, error = user_model.create(user_data)
+                print(is_created, error)
                 if is_created:  
                     return Response({ "success": "User created" })
                 else:
@@ -37,17 +41,19 @@ class CreateUserView(APIView):
         except Exception as e:
             print(f"Error:", e)
             return Response({ "error": "Failed to connect to MongoDB" })
+
                 
 class LoginUserView(APIView):  
     def post(self, request):
         try:
             client = connect_to_mongodb()
-            user_model = User(client['test'])
+            user_model = User(client['tool'])
             if client:
                 user_data = user_model.from_dict(request.data, is_full=False)
-                is_found, user_or_error = user_model.get(user_data, is_full=False)
+                is_found, user_or_error = user_model.get(user_data)
                 if is_found:
-                    if bcrypt.checkpw(user_data['password'].encode('utf-8'), user_or_error['password']):
+
+                    if bcrypt.checkpw(user_data['password'].encode('utf-8'), user_or_error['password'].encode('utf-8')):
                         payload = { 
                             "id": str(user_or_error['_id']),
                             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -70,14 +76,14 @@ class UserView(APIView):
     def get(self, request):
         try:
             client = connect_to_mongodb()
-            user_model = User(client['test'])
+            user_model = User(client['tool'])
             if client:
                 token = request.COOKIES.get('jwt')
                 if token:
                     try:
                         decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
                         id = ObjectId(decoded_token['id'])
-                        is_found, user = user_model.get({"_id": id}, is_full=False, is_id=True, where="_id")
+                        is_found, user = user_model.get({"_id": id}, where="_id")
                         if is_found:
                             response_data = user_model.to_dict(user)
                             return Response(response_data)
@@ -100,6 +106,8 @@ class LogoutUserView(APIView):
             "message": "success"
         }
         return response
+    
+# Page Views
     
 class PagesView(APIView):
     def get(self, request):
@@ -131,6 +139,35 @@ class PageView(APIView):
                         return Response({ "configName": config_name })
                     serialized_page = page_model.to_dict(page)
                     return Response({ "serialized_page": serialized_page, "error": "The config name is already given to another page setting!" })
+        except Exception as e:
+            print(f"Error:", e)
+            return Response({ "error": "Failed to connect to MongoDB" })
+        
+class CreatePageView(APIView):
+    def post(self, request):
+        try:
+            # if 'image' not in request.FILES:
+            #     return Response({ "error": "'image' not found in request.FILES" })
+
+            for i in request.FILES:
+                print(request.FILES[i])
+                fs = FileSystemStorage()
+                filename = fs.save(request.FILES[i].name, request.FILES[i])
+                uploaded_file_url = fs.url(filename)
+                print(uploaded_file_url)
+                print(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'client/dist', uploaded_file_url))
+                # return Response({ "success": "Page created" })
+
+            client = connect_to_mongodb()
+            page_model = Page(client['test'])
+            if client:
+                page_data = page_model.from_dict(request.data)
+                #print(request.FILES['image'])
+                is_created, error = page_model.create(page_data)
+                if is_created:  
+                    return Response({ "success": "Page created" })
+                else:
+                    return Response({ "error": error })
         except Exception as e:
             print(f"Error:", e)
             return Response({ "error": "Failed to connect to MongoDB" })

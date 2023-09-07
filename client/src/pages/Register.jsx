@@ -35,8 +35,9 @@ const Register = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post("/api/users/create/", { fullName, email, password, role });
+      console.log(data);
       if (data.error) {
-        toast.error(data.error);
+        toast.error(data.error.error);
         setIsLoading(false);
       } else {
         toast.success("Registration is successfully completed!");

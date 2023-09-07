@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/users/logout/', LogoutUserView.as_view(), name='users_logout'),
     path('api/pages/', PagesView.as_view(), name='pages'),
     path('api/pages/page/', PageView.as_view(), name='page'),
+    path('api/pages/create/', CreatePageView.as_view(), name='pages_create'),
 ]

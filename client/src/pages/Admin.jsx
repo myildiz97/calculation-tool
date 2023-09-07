@@ -41,7 +41,6 @@ const Admin = () => {
       try {
         const { data } = await axios.get(`/api/pages/page/?configName=${name}`);
         const { configName, error, serialized_page } = data;
-        console.log(configName, error, serialized_page)
         if (error || serialized_page) setError(error || serialized_page?.error);
         if (configName) {
           setError(null);

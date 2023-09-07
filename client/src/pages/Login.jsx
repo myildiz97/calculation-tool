@@ -38,8 +38,8 @@ const Login = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post("/api/users/login/", { email, password });
-      if (data.error) {
-        toast.error(data?.error);
+      if (data?.error) {
+        data?.error?.error ? toast.error(data?.error.error) : toast.error(data?.error);
         setIsLoading(false);
       } else {
         toast.success("Login is successfull!");

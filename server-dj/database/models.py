@@ -5,116 +5,99 @@ import datetime
 
 class User:
     def __init__(self, db):
-        self.collection = db['users']
-        # Create index
+        # Set collection name
+        self.collection_name = 'users'
+        # Set database
+        self.db = db
+        # Create collection
+        if self.collection_name in self.db.list_collection_names():
+            self.collection = self.db[self.collection_name]
+        else:
+            self.collection = self.db.create_collection(
+                self.collection_name,
+                validator={
+                    '$jsonSchema': {
+                        'bsonType': 'object',
+                        'required': ['fullName', 'email', 'password', 'role'],
+                        'properties': {
+                            'fullName': {
+                                'bsonType': 'string',
+                                'description': 'fullName must be a string'
+                            },
+                            'email': {
+                                'bsonType': 'string',
+                                'pattern': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                                'description': 'email must be a valid email format'
+                            },
+                            'password': {
+                                'bsonType': 'string',
+                                'minLength': 8,
+                                'description': 'password must be a string and longer than 8 characters'
+                            },
+                            'role': {
+                                'enum': user_roles,
+                                'description': 'role must be one of the following: ["Customer", "Admin"]'
+                            },
+                        }
+                    }
+                }
+            )
+
         self.collection.create_index("email", unique=True)
 
-    # Validate data
-    def validate(self, user_data, is_full=True, is_id=False):
-        if is_id:
-            if '_id' not in user_data or not isinstance(str(user_data['_id']), str):
-                return False, { "error": "Invalid id" }
-        else:
-            if is_full:
-                if 'fullName' not in user_data or not isinstance(user_data['fullName'], str):
-                    return False, { "error": "Invalid fullName"}
-                if 'role' not in user_data or user_data['role'] not in user_roles:
-                    return False, { "error": "Invalid role" }
-                
-            if 'email' not in user_data or not isinstance(user_data['email'], str):
-                return False, { "error": "Invalid email" }
-            if 'password' not in user_data or not isinstance(user_data['password'], str):
-                return False, { "error": "Invalid password" }
-            
-        return True, None
 
     # CRUD
 
     # Get user
-    def get(self, user_data, is_full=True, is_id=False, where="email"):
-        # Validate data
-        if is_id:
-            is_valid, error = self.validate(user_data, is_full=False, is_id=is_id)
-        else:
-            is_valid, error = self.validate(user_data, is_full=is_full)
-
-        # Get user
-        if is_valid:
-            try:
-                # Get user
-                user = self.collection.find_one({ where: user_data[where]})
+    def get(self, user_data, where="email"):
+        try:
+            user = self.collection.find_one({where: user_data[where]})
+            if user:
                 return True, user
-            except:
-                # User not found
-                return False, { "error": "User not found" }
-        else:
-            # Invalid data
-            return False, error
+            return False, { "error": "No registered user with given email!" }
+        except Exception as e:
+            return False, { "error": str(e) }
 
     # Create user
     def create(self, user_data):
-        # Validate data
-        is_valid, error = self.validate(user_data)
+        try:
+            # Hash password
+            user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            user_data['created_at'] = datetime.datetime.now()
+            user_data['updated_at'] = datetime.datetime.now()
 
-        # Create user
-        if is_valid:
-            try:
-                # Hash password
-                user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt())
-                user_data['created_at'] = datetime.datetime.now()
-                user_data['updated_at'] = datetime.datetime.now()
-
-                # Insert user
-                user_data['_id'] = self.collection.insert_one(user_data).inserted_id
-                return True, user_data['_id']
-            except DuplicateKeyError:
-                # Email already exists
-                return False, { "error": "Email already exists" }
-        else:
-            # Invalid data
-            return False, error
+            # Insert user
+            user_data['_id'] = self.collection.insert_one(user_data).inserted_id
+            return True, user_data['_id']
+        except DuplicateKeyError:
+            return False, { "error": "Email already exists" }
+        except Exception as e:
+            return False, { "error": str(e) }
 
     # Update user    
     def update(self, user_data):
-        # Validate data
-        is_valid, error = self.validate(user_data)
+        try:
+            # Hash password
+            user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            user_data['updated_at'] = datetime.datetime.now()
 
-        # Update user
-        if is_valid:
-            try:
-                # Hash password
-                user_data['password'] = bcrypt.hashpw(user_data['password'].encode('utf-8'), bcrypt.gensalt())
-                user_data['updated_at'] = datetime.datetime.now()
+            # Update user
+            self.collection.update_one({ "email": user_data['email'] }, { "$set": user_data })
+            return True, user_data['_id']
+        except DuplicateKeyError:
+            return False, { "error": "Email already exists" }
+        except Exception as e:
+            return False, { "error": str(e) }
 
-                # Update user
-                user_data['_id'] = self.collection.update_one({ "email": user_data['email'] }, { "$set": user_data })
-                return True, user_data['_id']
-            except DuplicateKeyError:
-                # Email already exists
-                return False, { "error": "User not updated since email already exists" }
-        else:
-            # Invalid data
-            return False, error
-    
     # Delete user
     def delete(self, user_data):
-        # Validate data
-        is_valid, error = self.validate(user_data)
-
-        # Delete user
-        if is_valid:
-            try:
-                # Delete user
-                user_data['_id'] = self.collection.delete_one({ "email": user_data['email'] })
-                return True, user_data['_id']
-            except DuplicateKeyError:
-                # User not deleted
-                return False, { "error": "User not deleted" }
-        else:
-            # Invalid data
-            return False, error
-
-    # Custom Serializer
+        try:
+            self.collection.delete_one({ "email": user_data['email'] })
+            return True, user_data['_id']
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+           # Custom Serializer
 
     # Convert to dict    
     def to_dict(self, instance, token=None):
@@ -142,6 +125,106 @@ class User:
 
 class Page:
     def __init__(self, db):
+        # Set collection name
+        self.collection_name = 'pages'
+        # Set database
+        self.db = db
+        # Create collection
+        if self.collection_name in self.db.list_collection_names():
+            self.collection = self.db[self.collection_name]
+        else:
+            self.collection = self.db.create_collection(
+                self.collection_name,
+                validator={
+                    '$jsonSchema': {
+                        'bsonType': 'object',
+                        'required': ['configName', 'admin', 'image', 'title', 'description', 'placeholder', 'variableName', 'outputName', 'outputValue', 'outputUnit', 'calculation'],
+                        'properties': {
+                            'configName': {
+                                'bsonType': 'string',
+                                'description': 'configName must be a string'
+                            },
+                            'admin': {
+                                'bsonType': 'string',
+                                'description': 'admin must be a string'
+                            },
+                            'image': {
+                                'bsonType': 'array',
+                                'description': 'image must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub image must be a string'
+                                }
+                            },
+                            'title': {
+                                'bsonType': 'array',
+                                'description': 'title must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub title must be a string'
+                                }
+                            },
+                            'description': {
+                                'bsonType': 'array',
+                                'description': 'description must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub description must be a string'
+                                }
+                            },
+                            'placeholder': {
+                                'bsonType': 'array',
+                                'description': 'placeholder must be an array',
+                                'items': {
+                                    'bsonType': 'array',
+                                    'description': 'sub placeholder must be an array',
+                                }
+                            },
+                            'variableName': {
+                                'bsonType': 'array',
+                                'description': 'variableName must be an array',
+                                'items': {
+                                    'bsonType': 'array',
+                                    'description': 'sub variableName must be an array',
+                                }
+                            },
+                            'outputName': {
+                                'bsonType': 'array',
+                                'description': 'outputName must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub outputName must be an string',
+                                }
+                            },
+                            'outputValue': {
+                                'bsonType': 'array',
+                                'description': 'outputValue must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub outputValue must be an string',
+                                }
+                            },
+                            'outputUnit': {
+                                'bsonType': 'array',
+                                'description': 'outputUnit must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub outputUnit must be an string',
+                                }
+                            },
+                            'calculation': {
+                                'bsonType': 'array',
+                                'description': 'calculation must be an array',
+                                'items': {
+                                    'bsonType': 'string',
+                                    'description': 'sub calculation must be an string',
+                                }
+                            },
+                        }
+                    }
+                }
+            )
+
         self.collection = db['pages']
         # Create index
         self.collection.create_index("configName", unique=True)

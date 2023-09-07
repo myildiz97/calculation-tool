@@ -79,6 +79,7 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
     const formData = new FormData();
 
     for (let i = 0; i < image.length; i++) {
+      console.log(image[i][0])
       formData.append("image", image[i][0]);
       formData.append("title", title[i]);
       formData.append("description", description[i]);
@@ -99,7 +100,7 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
     formData.append("admin", admin);
     
     try {
-      const { data } = await axios.post("/admin", formData);
+      const { data } = await axios.post("/api/pages/create/", formData);
 
       if (data.error) {
         toast.error(data.error);

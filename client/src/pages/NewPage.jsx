@@ -14,7 +14,7 @@ const NewPage = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get("/")
+    axios.get("/api/users/currentuser/")
       .then(({ data }) => (!data || data?.role !== "Admin") ? navigate("/login") : setUser(data))
       .catch((err) => console.log(err)); 
   }, []);
