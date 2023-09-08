@@ -7,13 +7,16 @@ const Apps = () => {
 
   const [pages, setPages] = useState(null);
 
-  useEffect(() => {
-    axios.get("/pages")
-      .then(({ data }) => setPages(data))
+  useEffect(() => { 
+    axios.get("/api/pages/")
+      .then(({ data }) => {
+        console.log(data);
+        setPages(data)
+      })
       .catch((err) => console.log(err));
   }, []);
 
-  const baseUrlImg = "http://localhost:5000";
+  const baseUrlImg = "http://localhost:8000";
 
   const handleGetConfig = (id) => navigate(`/apps/${id}`);
 
@@ -26,7 +29,7 @@ const Apps = () => {
           <hr className="page-hr" />
           {
             pages?.map((page, index) => (
-              <div key={"apps-page-" + index} className="apps-page" onClick={() => handleGetConfig(page?._id)}>{page?.configName}</div>
+              <div key={"apps-page-" + index} className="apps-page" onClick={() => handleGetConfig(page?.id)}>{page?.configName}</div>
             ))
           } 
           </>

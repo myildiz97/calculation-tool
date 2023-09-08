@@ -25,15 +25,17 @@ const Admin = () => {
           navigate("/login");
         }})
       .catch((err) => console.log(err));
+  }, []);
 
+  useEffect(() => {
     axios.get("/api/pages/")
       .then(({ data }) => {
-        let filtered = data?.filter(page => page?.admin && page?.admin === userId);
+        let filtered = data?.filter(page => page?.admin && page?.admin === user?.id);
         setPages(filtered);
         // setPages(data)
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [user]);
 
   const handleNewPage = async () => {
     setError(null);

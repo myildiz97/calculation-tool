@@ -130,12 +130,22 @@ class PageView(APIView):
             client = connect_to_mongodb()
             page_model = Page(client['tool'])
             if client:
+                id = request.GET.get('id', None)
                 config_name = request.GET.get('configName', None)
+                if id is not None:
+                    if not ObjectId.is_valid(id):
+                        return Response({ "error": "Invalid id" })
+                    elif id is not None and config_name is None:
+                        page = client['tool']['pages'].find_one({ "_id": ObjectId(id) })
+                        if page is None:
+                            return Response({ "error": "No page found" })
+                        serialized_page = page_model.to_dict(page)
+                        return Response({ "serialized_page": serialized_page })
+                
                 if config_name is None:
                     return Response({ "error": "No config name provided" })
                 else:  
                     page = client['tool']['pages'].find_one({ "configName": config_name })
-                    #page = page_model.get({ "configName": config_name }, where="configName")
                     if page is None:
                         return Response({ "configName": config_name })
                     serialized_page = page_model.to_dict(page)
@@ -151,7 +161,9 @@ class CreatePageView(APIView):
             page_model = Page(client['tool'])
             if client:
                 page_data = page_model.from_dict(request.data)
-                image_files = request.FILES.getlist('image')
+                print("page_data", page_data)
+                image_files = request.FILES.getlist('image') # get the files from the request
+                # save the files to the server
                 image_files_array = []
                 if image_files:
                     for image_file in image_files:
@@ -160,12 +172,11 @@ class CreatePageView(APIView):
                         uploaded_file_url = fs.url(filename)
                         image_files_array.append(uploaded_file_url)
                     page_data['image'] = image_files_array
-                #print("page_data", page_data)
-                is_created, error = page_model.create(page_data)
+                is_created, page_or_error = page_model.create(page_data)
                 if is_created:
-                    return Response({ "success": "Page created" })
+                    return Response(page_or_error)
                 else:
-                    return Response({ "error": error })
+                    return Response({ "error": page_or_error })
         except Exception as e:
             print(f"Error:", e)
             return Response({ "error": "Failed to connect to MongoDB" })

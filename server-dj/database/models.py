@@ -190,22 +190,6 @@ class Page:
 
         # Create index
         self.collection.create_index("configName", unique=True)
-
-    """ # Validate data
-    def validate(self, page_data):
-        if 'configName' not in page_data or not isinstance(page_data['configName'], str):
-            return False, { "error": "Invalid configName" }
-        if 'admin' not in page_data or not isinstance(page_data['admin'], str):
-            return False, { "error": "Invalid admin" }
-        
-        docs = ['image', 'title', 'description', 'placeholder', 'variablename', 
-                'outputname', 'outputvalue', 'outputunit', 'calculation']
-        
-        for doc in docs:
-            if doc not in page_data or not isinstance(page_data[doc], list):
-                return False, { "error": f"Invalid {doc}" }
-            
-        return True, None """
     
     # CRUD
 
@@ -223,11 +207,10 @@ class Page:
         # Create page
         try:
             # Insert page
-            print("page_data2", page_data)
             page_data['_id'] = self.collection.insert_one(page_data).inserted_id
             if page_data['_id'] is None:
                 return False, { "error": "Page not created" }
-            return True, page_data['_id']
+            return True, { "_id": str(page_data['_id']) }
         except DuplicateKeyError:
             # Page already exists
             return False, { "error": "Page already exists" }
@@ -272,19 +255,20 @@ class Page:
             "id": str(instance.get("_id")) if instance.get("_id") else None
         }
     
-    # Convert from dict
+    # Convert from dict 
     def from_dict(self, data_dict):
         page_data = {
             "configName": data_dict["configName"],
             "admin": data_dict["admin"],
             "image": data_dict["image"],
-            "title": data_dict["title"],
-            "description": data_dict["description"],
-            "placeholder": data_dict["placeholder"],
-            "variableName": data_dict["variableName"],
-            "outputName": data_dict["outputName"],
-            "outputValue": data_dict["outputValue"],
-            "outputUnit": data_dict["outputUnit"],
-            "calculation": data_dict["calculation"]
+            "title": data_dict.getlist("title"),
+            "description": data_dict.getlist("description"),
+            "placeholder": [[', '.join(i) for i in [item.split(',') for item in data_dict.getlist("placeholder", [])]]],
+            "variableName": [[', '.join(i) for i in [item.split(',') for item in data_dict.getlist("variableName", [])]]],
+            "outputName": data_dict.getlist("outputName"),
+            "outputValue": data_dict.getlist("outputValue"),
+            "outputUnit": data_dict.getlist("outputUnit"),
+            "calculation": data_dict.getlist("calculation")
         }
         return page_data
+

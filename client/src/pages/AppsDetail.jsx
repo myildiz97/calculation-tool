@@ -6,7 +6,7 @@ import DropInfo from "../forms/DropInfo.jsx";
 const AppsDetail = () => {
   const { id } = useParams();
 
-  const baseUrlImg = "http://localhost:5000";
+  const baseUrlImg = "http://localhost:8000";
 
   const [configPage, setConfigPage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -16,17 +16,17 @@ const AppsDetail = () => {
   const [outputVals, setOutputVals] = useState(null);
 
   useEffect(() => {
-    axios.get(`/apps/${id}`)
+    axios.get(`/api/pages/page/?id=${id}`)
       .then(({ data }) => {
-        setConfigPage(data?.page[0]);
+        setConfigPage(data.serialized_page);
         setVarNum((prevVarNum) => {
           let total = 0;
-          data?.page[0]?.variableName?.forEach((v) => {
+          data.serialized_page?.variableName?.[0].forEach((v) => {
             total += v[0].split(",").length;
           });
           return total;
         });
-        setOutputVals(data?.page[0]?.outputValue);
+        setOutputVals(data.serialized_page?.outputValue);
       })
       .catch((err) => console.error(err));
   }, [id]);
@@ -89,13 +89,13 @@ const AppsDetail = () => {
                   { index !== configPage.image.length - 1 ? (
                     <div className="apps-info-inputs">
                       {
-                        configPage?.variableName[index][0].split(",").map((name, i) => (
+                        configPage?.variableName?.[0][index].split(",").map((name, i) => (
                           <input
                             key={`apps-${name}-${i}`}
                             type="number"
                             min={0}
                             id={name}
-                            placeholder={configPage?.placeholder[index][0].split(",")[i]}
+                            placeholder={configPage?.placeholder?.[0][index].split(",")[i]}
                             onChange={e => handleChange(name, e.target.value)}
                           />
                         ))

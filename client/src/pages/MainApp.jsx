@@ -7,7 +7,7 @@ const MainApp = () => {
 
   const { id } = useParams();
 
-  const baseUrlImg = "http://localhost:5000";
+  const baseUrlImg = "http://localhost:8000";
 
   const [lastPage, setLastPage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,26 +17,26 @@ const MainApp = () => {
   const [outputVals, setOutputVals] = useState(null);
 
   useEffect(() => {
-    axios.get("/")
+    axios.get("/api/users/current")
       .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
       .catch((err) => console.log(err));
 
     if (id) {
-      axios.get(`/app/${id}`)
+      axios.get(`/api/pages/`)
       .then(({ data }) => {
-        setLastPage(data?.page[0]);
+        setLastPage(data?.[data.length - 1]);
         setVarNum((prevVarNum) => {
           let total = 0;
-          data?.page[0]?.variableName?.forEach((v) => {
+          data?.[data.length - 1]?.variableName?.forEach((v) => {
             total += v[0].split(",").length;
           });
           return total;
         });
-        setOutputVals(data?.page[0]?.outputValue);
+        setOutputVals(data?.[data.length - 1]?.outputValue);
       })
       .catch((err) => console.error(err));
     } else {
-      axios.get("/app")
+      axios.get("/api/pages/page/")
         .then(({ data }) => {
           setLastPage(data);
           setVarNum((prevVarNum) => {
@@ -107,16 +107,16 @@ const MainApp = () => {
                   <h1>{lastPage?.title[index]}</h1>
                   <h3 style={{fontWeight: "normal"}}>{lastPage?.description[index]}</h3>
                 </div>
-                  { index !== lastPage.image.length - 1 ? (
+                  { index !== lastPage?.image.length - 1 ? (
                     <div className="app-info-inputs">
                       {
-                        lastPage?.variableName[index][0].split(",").map((name, i) => (
+                        lastPage?.variableName?.[0]?.[index].split(",").map((name, i) => (
                           <input
                             key={`${name}-${i}`}
                             type="number"
                             min={0}
                             id={name}
-                            placeholder={lastPage?.placeholder[index][0].split(",")[i]}
+                            placeholder={lastPage?.placeholder?.[0]?.[index].split(",")[i]}
                             onChange={e => handleChange(name, e.target.value)}
                           />
                         ))

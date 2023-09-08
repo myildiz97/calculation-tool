@@ -71,8 +71,7 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data)
-    //return;
+
     setIsLoading(true);
 
     const { image, title, description, placeholder, variableName, 
@@ -81,7 +80,6 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
     const formData = new FormData();
 
     for (let i = 0; i < image.length; i++) {
-      console.log(image[i][0])
       formData.append("image", image[i][0]);
       formData.append("title", title[i]);
       formData.append("description", description[i]);
@@ -96,7 +94,7 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
       formData.append("outputValue", outputValue[i]);
       formData.append("outputUnit", outputUnit[i]);
       formData.append("calculation", calculation[i]);
-    }
+    };
 
     formData.append("configName", configName);
     formData.append("admin", admin);
@@ -107,13 +105,12 @@ const InputPage = ({ inputPageNumber, configName, admin }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("data", data);
       if (data.error) {
         toast.error(data.error);
         setIsLoading(false);
       } else {
         toast.success("Pages are successfully set!");
-        navigate("/app");
+        navigate(`/app/${data._id}`);
       };
 
     } catch (error) {
