@@ -31,7 +31,7 @@ const DropInfo = () => {
   const onSubmit = async ({ name, surname, phone }) => {
     setIsLoading(true);
     try {
-      const { data } = await axios.post("/customers", { name, surname, phone });
+      const { data } = await axios.post("/api/customers/create/", { name, surname, phone });
       if (data.error) {
         toast.error(data?.error);
         setIsLoading(false);

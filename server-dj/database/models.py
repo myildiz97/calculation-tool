@@ -1,7 +1,9 @@
 from .constants import user_roles
 from pymongo.errors import DuplicateKeyError
 import bcrypt
-import datetime
+import json
+from datetime import date, datetime
+from bson import ObjectId
 
 class User:
     def __init__(self, db):
@@ -38,6 +40,14 @@ class User:
                                 'enum': user_roles,
                                 'description': 'role must be one of the following: ["Customer", "Admin"]'
                             },
+                            'created_at': {
+                                'bsonType': 'date',
+                                'description': 'created_at must be a date'
+                            },
+                            'updated_at': {
+                                'bsonType': 'date',
+                                'description': 'updated_at must be a date'
+                            }
                         }
                     }
                 }
@@ -218,10 +228,11 @@ class Page:
     def update(self, page_data):
         try:
             # Update page
-            page_data['_id'] = self.collection.update_one({ "configName": page_data['configName'] }, { "$set": page_data })
-            if page_data['_id'] is None:
+            updated_page = self.collection.findByIdAndUpdate(page_data['_id'], page_data)
+            print(updated_page)
+            if updated_page is None:
                 return False, { "error": "Page not updated" }
-            return True, page_data['_id']
+            return True, updated_page
         except Exception as e:
             return False, { "error": str(e) }
 
@@ -239,7 +250,7 @@ class Page:
     # Custom Serializer
         
     # Convert to dict
-    def to_dict(self, instance):
+    """ def to_dict(self, instance):
         return {
             "configName": instance.get("configName"),
             "admin": instance.get("admin"),
@@ -253,9 +264,26 @@ class Page:
             "outputUnit": instance.get("outputUnit"),
             "calculation": instance.get("calculation"),
             "id": str(instance.get("_id")) if instance.get("_id") else None
-        }
+        } """
     
-    # Convert from dict 
+    def to_dict(self, instance):
+        page_data = {
+            "configName": instance["configName"],
+            "admin": instance["admin"],
+            "image": instance["image"],
+            "title": instance["title"],
+            "description": instance["description"],
+            "placeholder": [', '.join(sublist) for sublist in instance["placeholder"]],
+            "variableName": [', '.join(sublist) for sublist in instance["variableName"]],
+            "outputName": instance["outputName"],
+            "outputValue": instance["outputValue"],
+            "outputUnit": instance["outputUnit"],
+            "calculation": instance["calculation"],
+            "id": str(instance["_id"]) if "_id" in instance else None
+        }
+        return page_data
+
+    # Convert from dict
     def from_dict(self, data_dict):
         page_data = {
             "configName": data_dict["configName"],
@@ -272,3 +300,203 @@ class Page:
         }
         return page_data
 
+class Customer:
+    def __init__(self, db):
+        # Set collection name
+        self.collection_name = 'customers'
+        # Set database
+        self.db = db
+        # Create collection
+        if self.collection_name in self.db.list_collection_names():
+            self.collection = self.db[self.collection_name]
+        else:
+            self.collection = self.db.create_collection(
+                self.collection_name,
+                validator = {
+                    '$jsonSchema': {
+                        'bsonType': 'object',
+                        'properties': {
+                            'name': {
+                                'bsonType': 'string',
+                                'description': 'name must be a string'
+                            },
+                            'surname': {
+                                'bsonType': 'string',
+                                'description': 'surname must be a string'
+                            },
+                            'phone': {
+                                'bsonType': 'string',
+                                'pattern': '^(\+\d{1,2}\s?)?0?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}$',
+                                'description': 'phone must be a string and valid phone number'
+                            },
+                            'created_at': {
+                                'bsonType': 'date',
+                                'description': 'created_at must be a date'
+                            },
+                            'updated_at': {
+                                'bsonType': 'date',
+                                'description': 'updated_at must be a date'
+                            }
+                        }
+                    }
+                }
+            )
+
+    # CRUD
+
+    # Get customer
+    def get(self, customer_data, where="phone"):
+        try:
+            customer = self.collection.find_one({ where: customer_data[where]})
+            if customer:
+                return True, customer
+            return False, { "error": "Customer not found!" }
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    # Create customer
+    def create(self, customer_data):
+        try:
+            # Insert customer
+            customer_data['_id'] = self.collection.insert_one(customer_data).inserted_id
+            if customer_data['_id'] is None:
+                return False, { "error": "Customer not created" }
+            return True, { "_id": str(customer_data['_id']) }
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    # Update customer
+    def update(self, customer_data):
+        try:
+            # Update customer
+            customer_data['_id'] = self.collection.update_one({ "phone": customer_data['phone'] }, { "$set": customer_data })
+            if customer_data['_id'] is None:
+                return False, { "error": "Customer not updated" }
+            return True, customer_data['_id']
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    # Delete customer
+    def delete(self, customer_data):
+        try:
+            # Delete customer
+            customer_data['_id'] = self.collection.delete_one({ "phone": customer_data['phone'] })
+            if customer_data['_id'] is None:
+                return False, { "error": "Customer not deleted" }
+            return True, customer_data['_id']
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    # Custom Serializer
+
+    def to_dict(self, instance):
+        return {
+            "name": instance.get("name"),
+            "surname": instance.get("surname"),
+            "phone": instance.get("phone"),
+            "id": str(instance.get("_id")) if instance.get("_id") else None,
+            "created_at": instance.get("created_at"),
+            "updated_at": instance.get("updated_at")
+        }
+    
+    def from_dict(self, data_dict):
+        customer_data = {
+            "name": data_dict["name"],
+            "surname": data_dict["surname"],
+            "phone": data_dict["phone"],
+            "created_at": datetime.datetime.now(),
+            "updated_at": datetime.datetime.now()
+        }
+        return customer_data
+    
+
+
+# Test Class
+class Person:
+    def __init__(self, db):
+        # Set collection name
+        self.collection_name = 'persons'
+        # Set database
+        self.db = db
+        # Create collection
+        if self.collection_name in self.db.list_collection_names():
+            self.collection = self.db[self.collection_name]
+        else:
+            self.collection = self.db.create_collection(
+                self.collection_name,
+                validator = {
+                    '$jsonSchema': {
+                        'bsonType': 'object',
+                        'properties': {
+                            'name': {
+                                'bsonType': 'string',
+                                'description': 'name must be a string'
+                            },
+                            'surname': {
+                                'bsonType': 'string',
+                                'description': 'surname must be a string'
+                            },
+                            'phone': {
+                                'bsonType': 'string',
+                                'pattern': '^(\+\d{1,2}\s?)?0?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}$',
+                                'description': 'phone must be a string and valid phone number'
+                            },
+                            'created_at': {
+                                'bsonType': 'date',
+                                'description': 'created_at must be a date'
+                            },
+                            'updated_at': {
+                                'bsonType': 'date',
+                                'description': 'updated_at must be a date'
+                            }
+                        }
+                    }
+                }
+            )
+
+    # CRUD
+    def get(self, person_data, where="phone"):
+        try:
+            person = self.collection.find_one({ where: person_data[where]})
+            if person:
+                return True, person
+            return False, { "error": "Person not found!" }
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    def create(self, person_data):
+        try:
+            # Insert person
+            person_data['created_at'] = datetime.now()
+            person_data['updated_at'] = datetime.now()
+
+            person_data['_id'] = self.collection.insert_one(person_data).inserted_id
+            if person_data['_id'] is None:
+                return False, { "error": "Person not created" }
+            return True, { "_id": str(person_data['_id']) }
+        except Exception as e:
+            return False, { "error": str(e) }
+        
+    # Function to serialize a Python object to JSON string
+    def serialize_to_json(self, data):
+        try:
+            return json.dumps(data, default=self._json_serial, indent=4)
+        except Exception as e:
+            return str(e)
+
+
+    # Function to deserialize a JSON string to a Python object
+    def deserialize_from_json(self, json_string):
+        try:
+            return json.loads(json_string)
+        except Exception as e:
+            return str(e)
+
+    # Helper function to handle non-serializable data types
+    def _json_serial(self, obj):
+        """JSON serializer for objects not serializable by default json code"""
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        elif isinstance(obj, ObjectId):
+            return str(obj)
+        raise TypeError ("Type not serializable")

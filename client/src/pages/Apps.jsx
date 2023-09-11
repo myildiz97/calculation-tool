@@ -9,10 +9,7 @@ const Apps = () => {
 
   useEffect(() => { 
     axios.get("/api/pages/")
-      .then(({ data }) => {
-        console.log(data);
-        setPages(data)
-      })
+      .then(({ data }) => setPages(data))
       .catch((err) => console.log(err));
   }, []);
 

@@ -11,17 +11,16 @@ const EditPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get("/")
+    axios.get("/api/users/currentuser/")
       .then(({ data }) => {
-        console.log(data);
         (!data || data?.role !== "Admin") && navigate("/login");
       })
       .catch((err) => console.log(err));
 
-    axios.get(`/pages/${id}`)
+    axios.get(`/api/pages/page/?id=${id}`)
       .then(({ data }) => {
-        if (data?.page) {
-          setPage(data?.page[0]);
+        if (data?.serialized_page) {
+          setPage(data?.serialized_page);
         } else {
           setError(data?.error);
         };

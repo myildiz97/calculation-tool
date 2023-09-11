@@ -30,7 +30,9 @@ const Admin = () => {
   useEffect(() => {
     axios.get("/api/pages/")
       .then(({ data }) => {
+        console.log("data", data)
         let filtered = data?.filter(page => page?.admin && page?.admin === user?.id);
+        console.log("filtered", filtered)
         setPages(filtered);
         // setPages(data)
       })
@@ -100,14 +102,14 @@ const Admin = () => {
       <h2 style={{margin: "20px 0", color: "#fff"}}>Existing page settings of <span style={{color: "red"}}>{user?.fullName}</span></h2>
       <div className="existing-pages">
         {
-          pages?.length > 0 ? (
+          !pages?.error ? (
             <> {
               pages?.map((page, index) => (
                 <div key={`ex-page-${index}`} style={{width: "100%"}}>
                   <div className="existing-page">
-                    <div className="ex-page-name" onClick={() => handleGetConfig(page?._id)}>{page?.configName}</div>
-                    <AiFillEdit className="ex-page-btn" size="50" color="#fff" onClick={() => handleEditBtn(page?._id)}/>
-                    <AiFillDelete className="ex-page-btn" size="50" color="#fff" onClick={() => handleDeleteBtn(page?._id)}/>
+                    <div className="ex-page-name" onClick={() => handleGetConfig(page?.id)}>{page?.configName}</div>
+                    <AiFillEdit className="ex-page-btn" size="50" color="#fff" onClick={() => handleEditBtn(page?.id)}/>
+                    <AiFillDelete className="ex-page-btn" size="50" color="#fff" onClick={() => handleDeleteBtn(page?.id)}/>
                   </div>
                   {deleteError && <p className="errors">{deleteError}</p>}
                 </div >

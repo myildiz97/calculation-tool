@@ -52,7 +52,7 @@ const schema = z.object({
 });
 
 const EditPageComp = ({ page }) => {
-  const { _id , image, title, description, placeholder,
+  const { id , image, title, description, placeholder,
    variableName, outputName, outputValue, outputUnit,
    calculation } = page;
 
@@ -87,10 +87,10 @@ const EditPageComp = ({ page }) => {
       formData.append("outputValue", outputValue[i]);
       formData.append("outputUnit", outputUnit[i]);
       formData.append("calculation", calculation[i]);
-    }
+    };
 
     try {
-      const { data } = await axios.put(`/admin/edit/${_id}`, formData, {
+      const { data } = await axios.put(`api/pages/update/?id=${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }});
@@ -147,8 +147,8 @@ const EditPageComp = ({ page }) => {
                   register={register} 
                   errors={errors} 
                   index={index}
-                  placeholder={placeholder?.[index][0]}
-                  variableName={variableName?.[index][0]}
+                  placeholder={placeholder?.[0][index]}
+                  variableName={variableName?.[0][index]}
                 />
               :
                 <EditCustomOutput

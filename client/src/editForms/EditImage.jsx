@@ -10,7 +10,7 @@ const EditImage = ( { register, errors, image, index }) => {
     setBackgroundImage(newImage);
   };
 
-  const baseUrlImg = "http://localhost:5050";
+  const baseUrlImg = "http://localhost:8000";
 
   return (
     <div className="form-inputs">

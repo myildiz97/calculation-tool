@@ -7,11 +7,11 @@ const Customers = () => {
   const [customers, setCustomers] = useState(null);
 
   useEffect(() => {
-    axios.get("/")
+    axios.get("/api/users/currentuser/")
       .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
       .catch((error) => console.log(error));
 
-    axios.get("/customers")
+    axios.get("/api/customers/")
       .then(({ data } ) => setCustomers(data))
       .catch((error) => console.log(error));
   }, []);
@@ -33,7 +33,7 @@ const Customers = () => {
               <p style={{textAlign: "start"}}>Name: <span>{customer?.name}</span></p>
               <p style={{textAlign: "start"}}>Surname: <span>{customer?.surname}</span></p>
               <p style={{textAlign: "start"}}>Phone number: <span>{customer?.phone}</span></p>
-              <p style={{textAlign: "start"}}>Sent time: <span>{getDate(customer?.createdAt)}</span></p>
+              <p style={{textAlign: "start"}}>Sent time: <span>{getDate(customer?.created_at)}</span></p>
             </div>
             {index + 1 !== customers?.length && <hr className="page-hr" style={{marginBottom: "0", marginTop: "20px"}} />} 
           </div>

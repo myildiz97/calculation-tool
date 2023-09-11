@@ -30,6 +30,14 @@ urlpatterns = [
     path('api/pages/', PagesView.as_view(), name='pages'),
     path('api/pages/page/', PageView.as_view(), name='page'),
     path('api/pages/create/', CreatePageView.as_view(), name='pages_create'),
+    path('api/pages/update/', UpdatePageView.as_view(), name='pages_update'),
+    path('api/pages/calculation/', CalculationView.as_view(), name='calculation'),
+    path('api/customers/', CustomersView.as_view(), name='customers'),
+    path('api/customers/customer/', CustomerView.as_view(), name='customer'),
+    path('api/customers/create/', CreateCustomerView.as_view(), name='customers_create'),
+    path('api/persons/', PersonsView.as_view(), name='persons'),
+    #path('api/persons/person/', PersonView.as_view(), name='person'),
+    path('api/persons/create/', CreatePersonView.as_view(), name='persons_create'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

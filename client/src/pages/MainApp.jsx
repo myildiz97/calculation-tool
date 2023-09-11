@@ -17,7 +17,7 @@ const MainApp = () => {
   const [outputVals, setOutputVals] = useState(null);
 
   useEffect(() => {
-    axios.get("/api/users/current")
+    axios.get("/api/users/currentuser/")
       .then(({ data }) => (!data || data?.role !== "Admin") && navigate("/login"))
       .catch((err) => console.log(err));
 
@@ -27,8 +27,8 @@ const MainApp = () => {
         setLastPage(data?.[data.length - 1]);
         setVarNum((prevVarNum) => {
           let total = 0;
-          data?.[data.length - 1]?.variableName?.forEach((v) => {
-            total += v[0].split(",").length;
+          data?.[data.length - 1]?.variableName?.[0].forEach((v) => {
+            total += v.split(",").length;
           });
           return total;
         });
@@ -85,8 +85,10 @@ const MainApp = () => {
     if (trigger) {
       const expressionsArr = [...expressions];
       const newExpressionsArr = expressionsArr.map((e) => replaceVariables(e));
-      axios.post('/calculation', { expressions: JSON.stringify(newExpressionsArr), outputs: JSON.stringify(outputVals) })
-        .then(({ data }) => setOutputValues(data?.results))
+      axios.post('/api/pages/calculation/', { expressions: JSON.stringify(newExpressionsArr), outputs: JSON.stringify(outputVals) })
+        .then(({ data }) => {
+          setOutputValues(data?.results);
+        })
         .catch(error => console.error('Error calculating:', error));
     };
     handleNext();
